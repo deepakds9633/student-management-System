@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AnnouncementService from '../services/AnnouncementService';
 import AuthService from '../services/AuthService';

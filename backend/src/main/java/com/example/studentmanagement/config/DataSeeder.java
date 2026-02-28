@@ -57,6 +57,12 @@ public class DataSeeder implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
+                if (userRepository.count() > 0) {
+                        System.out.println(
+                                        "✅ Database is already populated. Skipping DataSeeder execution to avoid constraint violations...");
+                        return;
+                }
+
                 transactionTemplate.execute(status -> {
                         try {
                                 // 1. Wipe ALL Existing Data (Absolute Zero-State)
