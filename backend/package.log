@@ -1,0 +1,46 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.example:studentmanagement >--------------------
+[INFO] Building studentmanagement 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ studentmanagement ---
+[INFO] Deleting C:\Users\WELCOME\Desktop\student mangement\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ studentmanagement ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ studentmanagement ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 48 source files with javac [debug parameters release 17] to target\classes
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by lombok.permit.Permit
+WARNING: Please consider reporting this to the maintainers of class lombok.permit.Permit
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[INFO] /C:/Users/WELCOME/Desktop/student mangement/backend/src/main/java/com/example/studentmanagement/security/SecurityConfig.java: C:\Users\WELCOME\Desktop\student mangement\backend\src\main\java\com\example\studentmanagement\security\SecurityConfig.java uses or overrides a deprecated API.
+[INFO] /C:/Users/WELCOME/Desktop/student mangement/backend/src/main/java/com/example/studentmanagement/security/SecurityConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ studentmanagement ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ studentmanagement ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ studentmanagement ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ studentmanagement ---
+[INFO] Building jar: C:\Users\WELCOME\Desktop\student mangement\backend\target\studentmanagement-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:4.0.2:repackage (repackage) @ studentmanagement ---
+[INFO] Replacing main artifact C:\Users\WELCOME\Desktop\student mangement\backend\target\studentmanagement-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to C:\Users\WELCOME\Desktop\student mangement\backend\target\studentmanagement-0.0.1-SNAPSHOT.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.677 s
+[INFO] Finished at: 2026-02-17T15:08:49+05:30
+[INFO] ------------------------------------------------------------------------
