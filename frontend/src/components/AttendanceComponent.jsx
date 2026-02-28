@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AuthService from '../services/AuthService';
 import { listStudents } from '../services/StudentService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, XCircle, Users, Calendar, Filter, ChevronDown, Check, Info } from 'lucide-react';
 
 const AttendanceComponent = () => {
     const [students, setStudents] = useState([]);
@@ -9,11 +11,14 @@ const AttendanceComponent = () => {
     const [message, setMessage] = useState('');
     const [selectedIds, setSelectedIds] = useState(new Set());
     const [courseFilter, setCourseFilter] = useState('ALL');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true);
         listStudents().then((response) => {
             setStudents(response.data);
-        }).catch(error => console.error(error));
+        }).catch(error => console.error(error))
+            .finally(() => setLoading(false));
     }, []);
 
     const markAttendance = (studentId, status) => {
@@ -25,7 +30,7 @@ const AttendanceComponent = () => {
         }, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
-            .then(response => {
+            .then(() => {
                 setMessage(`Marked ${status} for student ID: ${studentId}`);
                 setTimeout(() => setMessage(''), 3000);
             })
@@ -49,7 +54,7 @@ const AttendanceComponent = () => {
         })
             .then(() => {
                 setMessage(`Successfully marked ${status} for ${selectedIds.size} students`);
-                setSelectedIds(new Set()); // clear selection
+                setSelectedIds(new Set());
                 setTimeout(() => setMessage(''), 3000);
             })
             .catch(error => {
@@ -69,7 +74,7 @@ const AttendanceComponent = () => {
     const filteredStudents = students.filter(s => courseFilter === 'ALL' || s.course === courseFilter);
 
     const toggleAll = () => {
-        if (selectedIds.size === filteredStudents.length) {
+        if (selectedIds.size === filteredStudents.length && filteredStudents.length > 0) {
             setSelectedIds(new Set());
         } else {
             setSelectedIds(new Set(filteredStudents.map(s => s.id)));
@@ -77,172 +82,183 @@ const AttendanceComponent = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--mc-bg)', padding: '2rem 1.5rem', color: 'var(--mc-text)', position: 'relative' }}>
-            <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-
-                {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}>📅 Attendance Entry</h2>
-                        <p style={{ color: 'var(--mc-text-muted)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>Automated bulk selection and tracking</p>
-                    </div>
+        <div className="max-w-5xl mx-auto space-y-6">
+            {/* Header */}
+            <div className="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="flex items-center gap-2">
+                        <Calendar size={22} style={{ color: 'var(--primary)' }} /> Attendance Entry
+                    </h1>
+                    <p>Automated bulk selection and tracking for institutional attendance.</p>
                 </div>
-
-                {/* Toolbar */}
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                        <label style={{ display: 'block', fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', marginBottom: '0.375rem' }}>FILTER CLASS/COURSE</label>
-                        <select
-                            value={courseFilter}
-                            onChange={(e) => {
-                                setCourseFilter(e.target.value);
-                                setSelectedIds(new Set()); // reset selection when changing filters
-                            }}
-                            className="pill-input-dark"
-                            style={{ height: '38px', padding: '0 1rem' }}
-                        >
-                            <option value="ALL">All Courses</option>
-                            {courses.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', marginBottom: '0.375rem' }}>DATE</label>
+                <div className="flex items-center gap-3">
+                    <div className="flex flex-col">
+                        <label className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-60">Session Date</label>
                         <input
                             type="date"
                             value={attendanceDate}
                             onChange={(e) => setAttendanceDate(e.target.value)}
-                            className="pill-input-dark"
-                            style={{ height: '38px', padding: '0 1rem', maxWidth: 180 }}
+                            className="pill-input-dark !py-1.5 !px-3 text-xs"
+                            style={{ width: '150px' }}
                         />
                     </div>
                 </div>
+            </div>
 
-                {/* Message Overlay */}
+            {/* Toolbar / Filters */}
+            <div className="md-card p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-64">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-mc-text-muted" size={14} />
+                        <select
+                            value={courseFilter}
+                            onChange={(e) => {
+                                setCourseFilter(e.target.value);
+                                setSelectedIds(new Set());
+                            }}
+                            className="pill-input-dark !pl-9 !py-2 text-sm appearance-none"
+                        >
+                            <option value="ALL">All Courses</option>
+                            {courses.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" size={14} />
+                    </div>
+                    <p className="text-xs font-bold" style={{ color: 'var(--text-muted)' }}>
+                        {filteredStudents.length} Students found
+                    </p>
+                </div>
+
+                <AnimatePresence>
+                    {selectedIds.size > 0 && (
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                            className="flex items-center gap-2 w-full sm:w-auto p-1.5 rounded-xl border border-primary/20 bg-primary/5">
+                            <span className="text-[10px] font-black uppercase px-2 text-primary">{selectedIds.size} Selected</span>
+                            <div className="h-4 w-[1px] bg-primary/20 mx-1" />
+                            <button
+                                onClick={() => markBulkAttendance('Present')}
+                                className="btn-primary !py-1.5 !px-4 text-[10px] !rounded-lg flex items-center gap-1.5"
+                            >
+                                <CheckCircle2 size={12} /> Mark Present
+                            </button>
+                            <button
+                                onClick={() => markBulkAttendance('Absent')}
+                                className="btn-secondary !py-1.5 !px-4 text-[10px] !rounded-lg !border-danger/30 !text-danger hover:!bg-danger/10 flex items-center gap-1.5"
+                            >
+                                <XCircle size={12} /> Mark Absent
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Message */}
+            <AnimatePresence>
                 {message && (
-                    <div className="animate-fadeIn" style={{
-                        marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.75rem',
-                        fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        background: message.includes('Error') ? 'rgba(244,63,94,0.08)' : 'rgba(34,197,94,0.08)',
-                        color: message.includes('Error') ? '#fb7185' : '#22c55e',
-                        border: `1px solid ${message.includes('Error') ? 'rgba(244,63,94,0.15)' : 'rgba(34,197,94,0.15)'}`
-                    }}>
-                        {message}
-                    </div>
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                        className={`toast flex items-center gap-3 ${message.includes('Error') ? 'toast-error' : 'toast-success'}`}>
+                        <Info size={16} />
+                        <span className="font-bold">{message}</span>
+                    </motion.div>
                 )}
+            </AnimatePresence>
 
-                {/* Table */}
-                <div style={{ background: 'var(--mc-card)', border: '1px solid var(--mc-border)', borderRadius: '1rem', overflow: 'hidden' }}>
-
-                    {/* Bulk Action Header attached to top of table */}
-                    <div style={{
-                        padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--mc-border)',
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        background: selectedIds.size > 0 ? 'rgba(59, 130, 246, 0.05)' : 'transparent',
-                        transition: 'background 0.2s ease'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <input
-                                type="checkbox"
-                                checked={filteredStudents.length > 0 && selectedIds.size === filteredStudents.length}
-                                onChange={toggleAll}
-                                style={{ accentColor: '#3b82f6', width: 16, height: 16, cursor: 'pointer' }}
-                            />
-                            <span style={{ fontSize: '0.75rem', color: selectedIds.size > 0 ? '#60a5fa' : 'var(--mc-text-muted)', fontWeight: 500 }}>
-                                {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select All'}
-                            </span>
-                        </div>
-
-                        {/* Bulk Actions fade in when selected */}
-                        {selectedIds.size > 0 && (
-                            <div className="animate-fadeIn" style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button onClick={() => markBulkAttendance('Present')} className="btn-gradient-blue" style={{ padding: '0.4rem 1rem', fontSize: '0.75rem', borderRadius: '999px' }}>
-                                    Mark Present
-                                </button>
-                                <button onClick={() => markBulkAttendance('Absent')} style={{
-                                    background: 'linear-gradient(135deg, rgba(244,63,94,0.1), rgba(225,29,72,0.1))',
-                                    border: '1px solid rgba(244,63,94,0.2)', color: '#fb7185',
-                                    padding: '0.4rem 1rem', fontSize: '0.75rem', borderRadius: '999px', cursor: 'pointer', fontWeight: 600
-                                }}>
-                                    Mark Absent
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '1px solid var(--mc-border)' }}>
-                                    <th style={{ width: 40, padding: '0.75rem 0 0.75rem 1.25rem' }}></th>
-                                    <th style={{ padding: '0.75rem 1.25rem', textAlign: 'left', fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Name</th>
-                                    <th style={{ padding: '0.75rem 1.25rem', textAlign: 'left', fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Course</th>
-                                    <th style={{ padding: '0.75rem 1.25rem', textAlign: 'right', fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Individual Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredStudents.map(student => (
-                                    <tr key={student.id}
+            {/* Table Area */}
+            <div className="md-card overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th className="!w-12 !pr-0">
+                                    <div
+                                        onClick={toggleAll}
+                                        className="w-5 h-5 rounded-md border-2 cursor-pointer flex items-center justify-center transition-all mx-auto"
                                         style={{
-                                            borderBottom: '1px solid rgba(255,255,255,0.03)',
-                                            background: selectedIds.has(student.id) ? 'rgba(255,255,255,0.03)' : 'transparent',
-                                            transition: 'background 0.1s'
+                                            borderColor: selectedIds.size > 0 ? 'var(--primary)' : 'var(--border-strong)',
+                                            background: filteredStudents.length > 0 && selectedIds.size === filteredStudents.length ? 'var(--primary)' : 'transparent'
                                         }}
-                                        onMouseEnter={e => { if (!selectedIds.has(student.id)) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
-                                        onMouseLeave={e => { if (!selectedIds.has(student.id)) e.currentTarget.style.background = 'transparent' }}
                                     >
-                                        <td style={{ padding: '0.75rem 0 0.75rem 1.25rem' }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedIds.has(student.id)}
-                                                onChange={() => toggleSelection(student.id)}
-                                                style={{ accentColor: '#3b82f6', width: 16, height: 16, cursor: 'pointer' }}
-                                            />
+                                        {filteredStudents.length > 0 && selectedIds.size === filteredStudents.length && <Check size={12} className="text-white" />}
+                                        {selectedIds.size > 0 && selectedIds.size < filteredStudents.length && <div className="w-2.5 h-0.5 bg-primary rounded-full" />}
+                                    </div>
+                                </th>
+                                <th>Student Name</th>
+                                <th>Course / Section</th>
+                                <th className="text-right">Individual Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                Array(5).fill(0).map((_, i) => (
+                                    <tr key={i}>
+                                        <td colSpan={4} className="p-4">
+                                            <div className="skeleton-loading h-10 w-full rounded-lg" />
                                         </td>
-                                        <td style={{ padding: '0.75rem 1.25rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                                                <div style={{
-                                                    width: 28, height: 28, borderRadius: '50%',
-                                                    background: 'rgba(0,229,200,0.1)',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    fontSize: '0.6875rem', fontWeight: 700, color: '#00e5c8', flexShrink: 0
-                                                }}>
-                                                    {student.name?.[0]?.toUpperCase()}
-                                                </div>
-                                                <span style={{ fontWeight: 500 }}>{student.name}</span>
+                                    </tr>
+                                ))
+                            ) : filteredStudents.length > 0 ? (
+                                filteredStudents.map((student) => (
+                                    <tr key={student.id}
+                                        className={`transition-colors duration-150 ${selectedIds.has(student.id) ? 'bg-primary/5' : ''}`}
+                                        onClick={() => toggleSelection(student.id)}
+                                    >
+                                        <td className="!pr-0" onClick={e => e.stopPropagation()}>
+                                            <div
+                                                onClick={() => toggleSelection(student.id)}
+                                                className="w-5 h-5 rounded-md border-2 cursor-pointer flex items-center justify-center transition-all mx-auto"
+                                                style={{
+                                                    borderColor: selectedIds.has(student.id) ? 'var(--primary)' : 'var(--border)',
+                                                    background: selectedIds.has(student.id) ? 'var(--primary)' : 'transparent'
+                                                }}
+                                            >
+                                                {selectedIds.has(student.id) && <Check size={12} className="text-white" />}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem 1.25rem', color: 'var(--mc-text-muted)' }}>{student.course}</td>
-                                        <td style={{ padding: '0.75rem 1.25rem', textAlign: 'right' }}>
-                                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', opacity: selectedIds.size > 0 ? 0.3 : 1, pointerEvents: selectedIds.size > 0 ? 'none' : 'auto' }}>
-                                                <button onClick={() => markAttendance(student.id, 'Present')}
-                                                    style={{
-                                                        background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-                                                        borderRadius: '0.375rem', padding: '0.25rem 0.5rem',
-                                                        color: '#22c55e', fontSize: '0.6875rem', fontWeight: 600, cursor: 'pointer'
-                                                    }}>
+                                        <td>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] text-white"
+                                                    style={{ background: 'var(--gradient-primary)' }}>
+                                                    {student.name?.[0]?.toUpperCase()}
+                                                </div>
+                                                <span className="font-semibold text-sm">{student.name}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-secondary-dim text-secondary border border-secondary/10"
+                                                style={{ background: 'var(--bg-base)', color: 'var(--text-muted)' }}>
+                                                {student.course}
+                                            </span>
+                                        </td>
+                                        <td className="text-right" onClick={e => e.stopPropagation()}>
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => markAttendance(student.id, 'Present')}
+                                                    className="p-1 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest border border-success/30 text-success hover:bg-success/10 transition-all"
+                                                >
                                                     Present
                                                 </button>
-                                                <button onClick={() => markAttendance(student.id, 'Absent')}
-                                                    style={{
-                                                        background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)',
-                                                        borderRadius: '0.375rem', padding: '0.25rem 0.5rem',
-                                                        color: '#fb7185', fontSize: '0.6875rem', fontWeight: 600, cursor: 'pointer'
-                                                    }}>
+                                                <button
+                                                    onClick={() => markAttendance(student.id, 'Absent')}
+                                                    className="p-1 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest border border-danger/30 text-danger hover:bg-danger/10 transition-all"
+                                                >
                                                     Absent
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        {filteredStudents.length === 0 && (
-                            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--mc-text-dim)', fontSize: '0.8125rem' }}>
-                                No students found for this filter.
-                            </div>
-                        )}
-                    </div>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4} className="py-20 text-center">
+                                        <div className="w-16 h-16 rounded-3xl bg-base mx-auto mb-4 flex items-center justify-center text-4xl grayscale opacity-50 border border-slate-200 dark:border-slate-800">
+                                            👥
+                                        </div>
+                                        <h3 className="font-bold opacity-60">No students found</h3>
+                                        <p className="text-xs opacity-40">Try adjusting your filters or search criteria.</p>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

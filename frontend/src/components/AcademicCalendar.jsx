@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import EventService from '../services/EventService';
 import AuthService from '../services/AuthService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Plus, X, Calendar as CalendarIcon, Edit2, Trash2, Clock, MapPin, Info } from 'lucide-react';
 
 const AcademicCalendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -9,10 +11,12 @@ const AcademicCalendar = () => {
     const [selectedEvents, setSelectedEvents] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // Form state for creating/editing events
+    // Form state
     const [formData, setFormData] = useState({ id: null, title: '', description: '', type: 'Assignments' });
     const [isEditing, setIsEditing] = useState(false);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         const user = AuthService.getCurrentUser();
@@ -25,129 +29,106 @@ const AcademicCalendar = () => {
     }, []);
 
     const fetchEvents = async () => {
+        setLoading(true);
         try {
             const response = await EventService.getAllEvents();
             setEvents(response.data);
+            if (selectedDate) {
+                setSelectedEvents(response.data.filter(ev => ev.date === selectedDate));
+            }
         } catch (error) {
             console.error("Error fetching events", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
 
+    const getTypeColors = (type) => {
+        const map = {
+            'Examinations': { color: 'var(--danger)', bg: 'var(--danger-dim)', border: 'rgba(239, 68, 68, 0.2)' },
+            'Assignments': { color: 'var(--primary)', bg: 'var(--primary-dim)', border: 'rgba(79, 70, 229, 0.2)' },
+            'Internal assessments': { color: 'var(--warning)', bg: 'var(--warning-dim)', border: 'rgba(245, 158, 11, 0.2)' },
+            'Holidays': { color: 'var(--success)', bg: 'var(--success-dim)', border: 'rgba(16, 185, 129, 0.2)' },
+            'Meetings': { color: 'var(--info)', bg: 'var(--info-dim)', border: 'rgba(59, 130, 246, 0.2)' },
+            'Notices': { color: 'var(--accent)', bg: 'var(--accent-dim)', border: 'rgba(6, 182, 212, 0.2)' },
+        };
+        return map[type] || { color: 'var(--text-muted)', bg: 'var(--bg-elevated)', border: 'var(--border)' };
+    };
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
     const renderCalendar = () => {
         const days = [];
-        const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
+        // Padding
         for (let i = 0; i < firstDayOfMonth; i++) {
-            days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+            days.push(<div key={`empty-${i}`} className="min-h-[100px] border-r border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-base)', opacity: 0.3 }} />);
         }
 
+        // Active days
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const dayEvents = events.filter(e => e.date === dateStr);
+            const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+            const isSelected = selectedDate === dateStr;
 
             days.push(
-                <div key={day} className="calendar-day" onClick={() => handleDateClick(dateStr, dayEvents)}
+                <div key={day} onClick={() => handleDateClick(dateStr, dayEvents)}
+                    className="min-h-[120px] p-2 border-r border-b relative cursor-pointer transition-all duration-200 group overflow-hidden"
                     style={{
-                        backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.05)',
-                        minHeight: '100px', padding: '0.5rem', cursor: 'pointer',
-                        transition: 'background-color 0.2s', position: 'relative'
+                        borderColor: 'var(--border)',
+                        background: isSelected ? 'var(--primary-dim)' : 'var(--bg-surface)',
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#243247'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1e293b'}
                 >
-                    <span style={{ fontWeight: 'bold', color: '#f8fafc' }}>{day}</span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
-                        {dayEvents.slice(0, 3).map((ev, index) => (
-                            <div key={index} style={{
-                                fontSize: '0.7rem', padding: '2px 4px', borderRadius: '4px',
-                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                                backgroundColor: getTypeColor(ev.type) + '33',
-                                color: getTypeColor(ev.type), border: `1px solid ${getTypeColor(ev.type)}66`
+                    {isToday && <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: 'var(--gradient-primary)' }} />}
+
+                    <div className="flex justify-between items-start mb-2">
+                        <span className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${isToday ? 'shadow-lg' : ''}`}
+                            style={isToday ? {
+                                background: 'var(--gradient-primary)', color: 'white'
+                            } : {
+                                color: isSelected ? 'var(--primary)' : 'var(--text-muted)'
                             }}>
-                                {ev.title}
-                            </div>
-                        ))}
-                        {dayEvents.length > 3 && (
-                            <div style={{ fontSize: '0.65rem', color: '#94a3b8', textAlign: 'center' }}>
-                                +{dayEvents.length - 3} more
+                            {day}
+                        </span>
+                        {dayEvents.length > 0 && (
+                            <span className="text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center"
+                                style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                                {dayEvents.length}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="space-y-1">
+                        {dayEvents.slice(0, 2).map((ev, idx) => {
+                            const cs = getTypeColors(ev.type);
+                            return (
+                                <div key={idx} className="text-[10px] px-1.5 py-0.5 rounded-md truncate font-medium border"
+                                    style={{ background: cs.bg, color: cs.color, borderColor: cs.border }}>
+                                    {ev.title}
+                                </div>
+                            );
+                        })}
+                        {dayEvents.length > 2 && (
+                            <div className="text-[9px] font-bold text-center py-0.5 opacity-60" style={{ color: 'var(--text-muted)' }}>
+                                +{dayEvents.length - 2} more
                             </div>
                         )}
                     </div>
                 </div>
             );
         }
-
         return days;
-    };
-
-    const getTypeColor = (type) => {
-        switch (type) {
-            case 'Examinations': return '#ef4444'; // Red
-            case 'Assignments': return '#8b5cf6'; // Purple
-            case 'Internal assessments': return '#f59e0b'; // Amber
-            case 'Holidays': return '#22c55e'; // Green
-            case 'Meetings': return '#3b82f6'; // Blue
-            default: return '#64748b'; // Slate
-        }
     };
 
     const handleDateClick = (dateStr, dayEvents) => {
         setSelectedDate(dateStr);
         setSelectedEvents(dayEvents);
         setIsSidebarOpen(true);
+        setShowForm(false);
         resetForm();
-    };
-
-    const handlePrevMonth = () => {
-        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-    };
-
-    const handleNextMonth = () => {
-        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-    };
-
-    const handleFormChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSaveEvent = async (e) => {
-        e.preventDefault();
-        const eventPayload = { ...formData, date: selectedDate };
-
-        try {
-            if (isEditing) {
-                await EventService.updateEvent(formData.id, eventPayload);
-            } else {
-                await EventService.createEvent(eventPayload);
-            }
-            fetchEvents();
-            // Refresh sidebar events for the selected date
-            const updatedResponse = await EventService.getAllEvents();
-            setEvents(updatedResponse.data);
-            setSelectedEvents(updatedResponse.data.filter(ev => ev.date === selectedDate));
-            resetForm();
-        } catch (error) {
-            console.error("Error saving event", error);
-        }
-    };
-
-    const handleDeleteEvent = async (id) => {
-        if (!window.confirm("Delete this event?")) return;
-        try {
-            await EventService.deleteEvent(id);
-            fetchEvents();
-            setSelectedEvents(selectedEvents.filter(ev => ev.id !== id));
-        } catch (error) {
-            console.error("Error deleting event", error);
-        }
-    };
-
-    const handleEditClick = (ev) => {
-        setIsEditing(true);
-        setFormData({ id: ev.id, title: ev.title, description: ev.description, type: ev.type });
     };
 
     const resetForm = () => {
@@ -155,139 +136,153 @@ const AcademicCalendar = () => {
         setFormData({ id: null, title: '', description: '', type: 'Assignments' });
     };
 
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f172a', fontFamily: "'Inter', sans-serif" }}>
+    const handleSaveEvent = async (e) => {
+        e.preventDefault();
+        const eventPayload = { ...formData, date: selectedDate };
+        try {
+            if (isEditing) await EventService.updateEvent(formData.id, eventPayload);
+            else await EventService.createEvent(eventPayload);
+            setShowForm(false);
+            fetchEvents();
+        } catch (err) { console.error(err); }
+    };
 
-            {/* Main Calendar Area */}
-            <div style={{ flex: 1, padding: '2rem', transition: 'margin-right 0.3s', marginRight: isSidebarOpen ? '350px' : '0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    const handleDeleteEvent = async (id) => {
+        if (!window.confirm("Delete this event?")) return;
+        try {
+            await EventService.deleteEvent(id);
+            fetchEvents();
+        } catch (err) { console.error(err); }
+    };
+
+    const handleEditClick = (ev) => {
+        setIsEditing(true);
+        setFormData({ id: ev.id, title: ev.title, description: ev.description, type: ev.type });
+        setShowForm(true);
+    };
+
+    const canManage = userRole === 'ADMIN' || userRole === 'STAFF';
+
+    return (
+        <div className="flex h-[calc(100vh-140px)] rounded-2xl border overflow-hidden"
+            style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+
+            {/* Calendar Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+                <div className="p-6 border-b flex justify-between items-center bg-white dark:bg-slate-900/50" style={{ borderColor: 'var(--border)' }}>
                     <div>
-                        <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: '700', margin: 0 }}>Academic Calendar</h1>
-                        <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>Plan and monitor institutional events</p>
+                        <h1 className="flex items-center gap-2"><CalendarIcon size={22} style={{ color: 'var(--primary)' }} /> Academic Calendar</h1>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Institutional schedule and event management</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        <button onClick={handlePrevMonth} style={btnStyle}>&larr; Prev</button>
-                        <h2 style={{ color: '#f8fafc', fontWeight: '600', minWidth: '150px', textAlign: 'center' }}>
+
+                    <div className="flex items-center gap-1.5 p-1 rounded-xl" style={{ border: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
+                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}
+                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-all">
+                            <ChevronLeft size={18} />
+                        </button>
+                        <button onClick={() => setCurrentDate(new Date())} className="px-4 py-1.5 text-xs font-bold">
                             {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                        </h2>
-                        <button onClick={handleNextMonth} style={btnStyle}>Next &rarr;</button>
+                        </button>
+                        <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}
+                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-all">
+                            <ChevronRight size={18} />
+                        </button>
                     </div>
                 </div>
 
-                {/* Calendar Grid */}
-                <div style={{ backgroundColor: '#1e293b', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-                    {/* Days Header */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', backgroundColor: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                            <div key={day} style={{ padding: '1rem', textAlign: 'center', fontWeight: '600', color: '#94a3b8', fontSize: '0.875rem' }}>
-                                {day}
-                            </div>
+                <div className="flex-1 overflow-auto bg-slate-50/30 dark:bg-transparent">
+                    <div className="grid grid-cols-7 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-elevated)' }}>
+                        {dayNames.map(day => (
+                            <div key={day} className="py-2.5 text-center text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{day}</div>
                         ))}
                     </div>
-                    {/* Date Cells */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                        {renderCalendar()}
+
+                    <div className="grid grid-cols-7 auto-rows-fr">
+                        {loading ? (
+                            <div className="col-span-7 h-96 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                            </div>
+                        ) : renderCalendar()}
                     </div>
                 </div>
             </div>
 
-            {/* Right Sidebar for Event Details */}
-            <div style={{
-                position: 'fixed', top: 0, right: isSidebarOpen ? 0 : '-350px',
-                width: '350px', height: '100vh', backgroundColor: '#1e293b',
-                borderLeft: '1px solid rgba(255,255,255,0.05)', transition: 'right 0.3s ease',
-                padding: '2rem 1.5rem', overflowY: 'auto', zIndex: 50, boxShadow: '-5px 0 25px rgba(0,0,0,0.5)'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <h3 style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 'bold' }}>
-                        {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : 'Events'}
-                    </h3>
-                    <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
-                </div>
+            {/* Sidebar */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 380, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
+                        className="border-l relative flex flex-col bg-white dark:bg-slate-900" style={{ borderColor: 'var(--border)' }}>
 
-                {/* Events List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                    {selectedEvents.length === 0 ? (
-                        <p style={{ color: '#64748b', fontSize: '0.875rem', fontStyle: 'italic' }}>No events scheduled for this day.</p>
-                    ) : (
-                        selectedEvents.map((ev) => (
-                            <div key={ev.id} style={{
-                                backgroundColor: '#0f172a', padding: '1rem', borderRadius: '0.75rem',
-                                borderLeft: `4px solid ${getTypeColor(ev.type)}`
-                            }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                    <h4 style={{ color: '#f8fafc', margin: '0 0 0.25rem 0', fontSize: '1rem' }}>{ev.title}</h4>
-                                    {(userRole === 'ADMIN' || userRole === 'STAFF') && (
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button onClick={() => handleEditClick(ev)} style={iconBtnStyle('text-blue-400')}>✎</button>
-                                            <button onClick={() => handleDeleteEvent(ev.id)} style={iconBtnStyle('text-red-400')}>🗑</button>
-                                        </div>
-                                    )}
-                                </div>
-                                <span style={{
-                                    fontSize: '0.7rem', color: getTypeColor(ev.type), backgroundColor: getTypeColor(ev.type) + '22',
-                                    padding: '2px 6px', borderRadius: '10px', display: 'inline-block', marginBottom: '0.5rem'
-                                }}>{ev.type}</span>
-                                <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0, lineHeight: '1.4' }}>{ev.description}</p>
-                            </div>
-                        ))
-                    )}
-                </div>
-
-                {/* Add/Edit Form (Admin/Staff only) */}
-                {(userRole === 'ADMIN' || userRole === 'STAFF') && (
-                    <div style={{ backgroundColor: '#0f172a', padding: '1.25rem', borderRadius: '0.75rem', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <h4 style={{ color: '#fff', margin: '0 0 1rem 0' }}>{isEditing ? 'Edit Event' : 'Add New Event'}</h4>
-                        <form onSubmit={handleSaveEvent} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <input type="text" name="title" placeholder="Event Title" value={formData.title} onChange={handleFormChange} required style={inputStyle} />
-
-                            <select name="type" value={formData.type} onChange={handleFormChange} style={inputStyle}>
-                                <option>Assignments</option>
-                                <option>Examinations</option>
-                                <option>Internal assessments</option>
-                                <option>Notices</option>
-                                <option>Holidays</option>
-                                <option>Meetings</option>
-                            </select>
-
-                            <textarea name="description" placeholder="Description" value={formData.description} onChange={handleFormChange} required style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }} />
-
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button type="submit" style={{ ...btnStyle, flex: 1, backgroundColor: '#3b82f6', color: '#fff', border: 'none' }}>
-                                    {isEditing ? 'Update' : 'Save'}
+                        <div className="p-5 border-b sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-10" style={{ borderColor: 'var(--border)' }}>
+                            <div className="flex justify-between items-center mb-1">
+                                <h3 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>
+                                    {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Schedule'}
+                                </h3>
+                                <button onClick={() => setIsSidebarOpen(false)} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                                    <X size={16} />
                                 </button>
-                                {isEditing && (
-                                    <button type="button" onClick={resetForm} style={{ ...btnStyle, backgroundColor: '#475569', color: '#fff', border: 'none' }}>Cancel</button>
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--primary)' }}>Daily Plan</p>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+                            {canManage && (
+                                showForm ? (
+                                    <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSaveEvent} className="p-4 rounded-xl border space-y-4 shadow-sm" style={{ borderColor: 'var(--border)', background: 'var(--bg-elevated)' }}>
+                                        <div className="flex justify-between items-center mb-1">
+                                            <h4 className="text-xs font-bold uppercase tracking-wider">{isEditing ? 'Edit Event' : 'New Event'}</h4>
+                                            <X size={14} className="cursor-pointer opacity-50" onClick={() => setShowForm(false)} />
+                                        </div>
+                                        <input required className="pill-input-dark text-xs" placeholder="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                                        <select className="pill-input-dark text-xs" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
+                                            <option>Assignments</option><option>Examinations</option><option>Internal assessments</option><option>Notices</option><option>Holidays</option><option>Meetings</option>
+                                        </select>
+                                        <textarea required className="pill-input-dark text-xs min-h-[60px]" placeholder="Decription" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                                        <button type="submit" className="btn-primary w-full text-xs py-2">{isEditing ? 'Update Event' : 'Create Event'}</button>
+                                    </motion.form>
+                                ) : (
+                                    <button onClick={() => setShowForm(true)} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-500 transition-all flex items-center justify-center gap-2 text-xs font-bold" style={{ color: 'var(--text-muted)' }}>
+                                        <Plus size={16} /> Add Event
+                                    </button>
+                                )
+                            )}
+
+                            <div className="space-y-3">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest opacity-50">Timeline</h4>
+                                {selectedEvents.length === 0 ? (
+                                    <div className="py-12 text-center opacity-40">
+                                        <CalendarIcon size={32} className="mx-auto mb-2" />
+                                        <p className="text-xs">No scheduled events</p>
+                                    </div>
+                                ) : (
+                                    selectedEvents.map((ev, i) => {
+                                        const cs = getTypeColors(ev.type);
+                                        return (
+                                            <motion.div key={ev.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                                                className="p-4 rounded-xl border relative overflow-hidden group" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+                                                <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: cs.color }} />
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border" style={{ background: cs.bg, color: cs.color, borderColor: cs.border }}>{ev.type}</span>
+                                                    {canManage && (
+                                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                                            <button onClick={() => handleEditClick(ev)} className="p-1 hover:text-indigo-500"><Edit2 size={12} /></button>
+                                                            <button onClick={() => handleDeleteEvent(ev.id)} className="p-1 hover:text-red-500"><Trash2 size={12} /></button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <h5 className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>{ev.title}</h5>
+                                                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{ev.description}</p>
+                                            </motion.div>
+                                        );
+                                    })
                                 )}
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </motion.div>
                 )}
-            </div>
-
-            {/* Overlay for mobile/sidebar */}
-            {isSidebarOpen && (
-                <div onClick={() => setIsSidebarOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 40 }} />
-            )}
+            </AnimatePresence>
         </div>
     );
-};
-
-// Reusable inline styles
-const btnStyle = {
-    backgroundColor: 'rgba(255,255,255,0.05)', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.1)',
-    padding: '0.5rem 1rem', borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500',
-    transition: 'all 0.2s'
-};
-
-const iconBtnStyle = (colorClass) => ({
-    background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.2rem',
-    color: colorClass.includes('red') ? '#f87171' : '#60a5fa', opacity: 0.8
-});
-
-const inputStyle = {
-    width: '100%', backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem',
-    padding: '0.75rem', color: '#fff', fontSize: '0.875rem', outline: 'none'
 };
 
 export default AcademicCalendar;

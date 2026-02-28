@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.studentmanagement.repository.UserRepository;
+import com.example.studentmanagement.repository.StudentRepository;
+import com.example.studentmanagement.Student;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +20,20 @@ public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    private Student getStudentFromPrincipal(Principal principal) {
+        if (principal == null)
+            return null;
+        return userRepository.findByUsername(principal.getName())
+                .flatMap(user -> studentRepository.findByUserId(user.getId()))
+                .orElse(null);
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('STAFF')")
@@ -31,8 +49,22 @@ public class AttendanceController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
-    public List<Attendance> getAttendanceByStudent(@PathVariable("studentId") Long studentId) {
-        return attendanceService.getAttendanceByStudent(studentId);
+    public List<Attendance> getAttendanceByStudent(@PathVariable("studentId") String studentId, Principal principal) {
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (!isStaff || studentId.equals("me")) {
+            Student student = getStudentFromPrincipal(principal);
+            if (student == null)
+                return List.of();
+            return attendanceService.getAttendanceByStudent(student.getId());
+        }
+
+        try {
+            return attendanceService.getAttendanceByStudent(Long.valueOf(studentId));
+        } catch (NumberFormatException e) {
+            return List.of();
+        }
     }
 
     @GetMapping("/date/{date}")

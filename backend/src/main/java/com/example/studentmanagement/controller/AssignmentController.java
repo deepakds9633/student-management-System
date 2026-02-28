@@ -11,6 +11,8 @@ import com.example.studentmanagement.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.example.studentmanagement.repository.UserRepository;
+import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,28 +43,47 @@ public class AssignmentController {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private Student getStudentFromPrincipal(Principal principal) {
+        if (principal == null)
+            return null;
+        return userRepository.findByUsername(principal.getName())
+                .flatMap(user -> studentRepository.findByUserId(user.getId()))
+                .orElse(null);
+    }
+
     private static final String UPLOAD_DIR = System.getProperty("user.home") + File.separator + "student-mgmt-uploads"
             + File.separator + "assignments" + File.separator;
 
     @PostMapping("/submit")
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
     public ResponseEntity<?> submitAssignment(
-            @RequestParam("studentId") Long studentId,
+            @RequestParam(value = "studentId", required = false) Long studentId,
             @RequestParam("taskId") Long taskId,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Principal principal) {
 
         AssignmentTask task = assignmentTaskRepository.findById(taskId).orElse(null);
         if (task == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Assignment Task not found"));
         }
 
-        // Resolve student (try as user ID first, then student ID)
-        Student student = studentRepository.findByUserId(studentId).orElse(null);
-        if (student == null) {
-            student = studentRepository.findById(studentId).orElse(null);
+        // Resolve student
+        Student student = getStudentFromPrincipal(principal);
+
+        // Staff might specify a studentId for manual entry
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (isStaff && studentId != null) {
+            student = studentRepository.findById(studentId)
+                    .orElseGet(() -> studentRepository.findByUserId(studentId).orElse(null));
         }
+
         if (student == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Student not found"));
+            return ResponseEntity.badRequest().body(Map.of("message", "Authorized student record not found"));
         }
 
         Assignment assignment = new Assignment();
@@ -108,15 +129,31 @@ public class AssignmentController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
-    public ResponseEntity<List<Assignment>> getByStudent(@PathVariable("studentId") Long studentId) {
-        List<Assignment> list = assignmentRepository.findByStudentId(studentId);
-        if (list.isEmpty()) {
-            Student student = studentRepository.findByUserId(studentId).orElse(null);
-            if (student != null) {
-                list = assignmentRepository.findByStudentId(student.getId());
-            }
+    public ResponseEntity<List<Assignment>> getByStudent(@PathVariable("studentId") String studentId,
+            Principal principal) {
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (!isStaff || studentId.equals("me")) {
+            Student student = getStudentFromPrincipal(principal);
+            if (student == null)
+                return ResponseEntity.ok(List.of());
+            return ResponseEntity.ok(assignmentRepository.findByStudentId(student.getId()));
         }
-        return ResponseEntity.ok(list);
+
+        try {
+            Long sid = Long.valueOf(studentId);
+            List<Assignment> list = assignmentRepository.findByStudentId(sid);
+            if (list.isEmpty()) {
+                Student student = studentRepository.findByUserId(sid).orElse(null);
+                if (student != null) {
+                    list = assignmentRepository.findByStudentId(student.getId());
+                }
+            }
+            return ResponseEntity.ok(list);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping

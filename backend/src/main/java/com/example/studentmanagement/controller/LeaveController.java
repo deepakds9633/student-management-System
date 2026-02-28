@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.example.studentmanagement.repository.UserRepository;
+import java.security.Principal;
 
 import java.util.List;
 import java.util.Map;
@@ -28,36 +30,47 @@ public class LeaveController {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private Student getStudentFromPrincipal(Principal principal) {
+        if (principal == null)
+            return null;
+        return userRepository.findByUsername(principal.getName())
+                .flatMap(user -> studentRepository.findByUserId(user.getId()))
+                .orElse(null);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
-    public ResponseEntity<?> applyLeave(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<?> applyLeave(@RequestBody Map<String, Object> body, Principal principal) {
         try {
-            // Handle both student.id and userId lookups
-            Long studentId = null;
+            Student student = getStudentFromPrincipal(principal);
 
-            if (body.containsKey("student")) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> studentMap = (Map<String, Object>) body.get("student");
-                if (studentMap.containsKey("id")) {
-                    studentId = Long.valueOf(studentMap.get("id").toString());
+            // If staff is applying on behalf of a student, they might provide an ID
+            // but for students, we MUST use their own identity
+            boolean isStaff = userRepository.findByUsername(principal.getName())
+                    .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+            if (isStaff) {
+                Long sid = null;
+                if (body.containsKey("student")) {
+                    Map<String, Object> studentMap = (Map<String, Object>) body.get("student");
+                    if (studentMap.containsKey("id"))
+                        sid = Long.valueOf(studentMap.get("id").toString());
                 }
-            }
-            if (body.containsKey("studentId")) {
-                studentId = Long.valueOf(body.get("studentId").toString());
-            }
+                if (body.containsKey("studentId"))
+                    sid = Long.valueOf(body.get("studentId").toString());
 
-            // Try to find student - first by student ID, then by user ID
-            Student student = null;
-            if (studentId != null) {
-                student = studentRepository.findById(studentId).orElse(null);
-                if (student == null) {
-                    // Try as user ID
-                    student = studentRepository.findByUserId(studentId).orElse(null);
+                if (sid != null) {
+                    final Long finalSid = sid;
+                    student = studentRepository.findById(finalSid)
+                            .orElseGet(() -> studentRepository.findByUserId(finalSid).orElse(null));
                 }
             }
 
             if (student == null) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Student not found with id: " + studentId));
+                return ResponseEntity.badRequest().body(Map.of("message", "Authorized student record not found."));
             }
 
             Leave leave = new Leave();
@@ -87,16 +100,33 @@ public class LeaveController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
-    public ResponseEntity<List<Leave>> getStudentLeaves(@PathVariable("studentId") Long studentId) {
-        // Try as student ID first, then as user ID
-        List<Leave> leaves = leaveService.getLeavesByStudent(studentId);
-        if (leaves.isEmpty()) {
-            Student student = studentRepository.findByUserId(studentId).orElse(null);
-            if (student != null) {
-                leaves = leaveService.getLeavesByStudent(student.getId());
-            }
+    public ResponseEntity<List<Leave>> getStudentLeaves(@PathVariable("studentId") String studentId,
+            Principal principal) {
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (!isStaff || studentId.equals("me")) {
+            // Enforce student ownership
+            Student currentStudent = getStudentFromPrincipal(principal);
+            if (currentStudent == null)
+                return ResponseEntity.status(403).build();
+            return ResponseEntity.ok(leaveService.getLeavesByStudent(currentStudent.getId()));
         }
-        return ResponseEntity.ok(leaves);
+
+        // Staff flow - use the provided studentId (must be numeric)
+        try {
+            Long id = Long.valueOf(studentId);
+            List<Leave> leaves = leaveService.getLeavesByStudent(id);
+            if (leaves.isEmpty()) {
+                Student student = studentRepository.findByUserId(id).orElse(null);
+                if (student != null) {
+                    leaves = leaveService.getLeavesByStudent(student.getId());
+                }
+            }
+            return ResponseEntity.ok(leaves);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/pending")

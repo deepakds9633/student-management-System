@@ -1,56 +1,71 @@
-import './App.css'
-import FooterComponent from './components/FooterComponent'
-import HeaderComponent from './components/HeaderComponent'
-import ListStudentComponent from './components/ListStudentComponent'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import StudentComponent from './components/StudentComponent'
-import LoginComponent from './components/LoginComponent'
-import StaffDashboard from './components/StaffDashboard'
-import StudentDashboard from './components/StudentDashboard'
-import AttendanceComponent from './components/AttendanceComponent'
-import MarkComponent from './components/MarkComponent'
-import ReportsComponent from './components/ReportsComponent'
-import AnalyticsDashboard from './components/AnalyticsDashboard'
-import LeaveManagement from './components/LeaveManagement'
-import NoticeBoard from './components/NoticeBoard'
-import NoticeDetail from './components/NoticeDetail'
-import AssignmentPage from './components/AssignmentPage'
-import ExportReports from './components/ExportReports'
-import AdminDashboard from './components/AdminDashboard'
-import AcademicCalendar from './components/AcademicCalendar'
-
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MainLayout from './components/layout/MainLayout';
 import { ThemeProvider } from './contexts/ThemeContext';
 
-function App() {
+// Lazy loading components for performance optimization
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const StaffDashboard = lazy(() => import('./components/StaffDashboard'));
+const StudentDashboard = lazy(() => import('./components/StudentDashboard'));
+const ListStudentComponent = lazy(() => import('./components/ListStudentComponent'));
+const StudentComponent = lazy(() => import('./components/StudentComponent'));
+const StudentProfile = lazy(() => import('./components/StudentProfile'));
+const LoginComponent = lazy(() => import('./components/LoginComponent'));
+const AttendanceComponent = lazy(() => import('./components/AttendanceComponent'));
+const MarkComponent = lazy(() => import('./components/MarkComponent'));
+const ReportsComponent = lazy(() => import('./components/ReportsComponent'));
+const AnalyticsDashboard = lazy(() => import('./components/AnalyticsDashboard'));
+const LeaveManagement = lazy(() => import('./components/LeaveManagement'));
+const NoticeBoard = lazy(() => import('./components/NoticeBoard'));
+const NoticeDetail = lazy(() => import('./components/NoticeDetail'));
+const AssignmentPage = lazy(() => import('./components/AssignmentPage'));
+const ExportReports = lazy(() => import('./components/ExportReports'));
+const AcademicCalendar = lazy(() => import('./components/AcademicCalendar'));
+const SettingsPage = lazy(() => import('./components/SettingsPage'));
 
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh] w-full">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-10 h-10 border-4 border-mc-primary/20 border-t-mc-primary rounded-full animate-spin"></div>
+      <p className="text-mc-text-muted text-sm font-medium">Loading Page...</p>
+    </div>
+  </div>
+);
+
+function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <HeaderComponent />
-        <Routes>
-          <Route path='/login' element={<LoginComponent />}></Route>
-          <Route path='/admin-dashboard' element={<AdminDashboard />}></Route>
-          <Route path='/staff-dashboard' element={<StaffDashboard />}></Route>
-          <Route path='/student-dashboard' element={<StudentDashboard />}></Route>
-          <Route path='/attendance' element={<AttendanceComponent />}></Route>
-          <Route path='/marks' element={<MarkComponent />}></Route>
-          <Route path='/reports' element={<ReportsComponent />}></Route>
-          <Route path='/analytics' element={<AnalyticsDashboard />}></Route>
-          <Route path='/leaves' element={<LeaveManagement />}></Route>
-          <Route path='/notices' element={<NoticeBoard />}></Route>
-          <Route path='/notices/:id' element={<NoticeDetail />}></Route>
-          <Route path='/assignments' element={<AssignmentPage />}></Route>
-          <Route path='/export' element={<ExportReports />}></Route>
-          <Route path='/calendar' element={<AcademicCalendar />}></Route>
-          <Route path='/' element={<LoginComponent />}></Route>
-          <Route path='/students' element={<ListStudentComponent />}></Route>
-          <Route path='/add-student' element={<StudentComponent />}></Route>
-          <Route path='/edit-student/:id' element={<StudentComponent />}></Route>
-        </Routes>
-        <FooterComponent />
+        <MainLayout>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path='/login' element={<LoginComponent />} />
+              <Route path='/admin-dashboard' element={<AdminDashboard />} />
+              <Route path='/staff-dashboard' element={<StaffDashboard />} />
+              <Route path='/student-dashboard' element={<StudentDashboard />} />
+              <Route path='/attendance' element={<AttendanceComponent />} />
+              <Route path='/marks' element={<MarkComponent />} />
+              <Route path='/reports' element={<ReportsComponent />} />
+              <Route path='/analytics' element={<AnalyticsDashboard />} />
+              <Route path='/leaves' element={<LeaveManagement />} />
+              <Route path='/notices' element={<NoticeBoard />} />
+              <Route path='/notices/:id' element={<NoticeDetail />} />
+              <Route path='/assignments' element={<AssignmentPage />} />
+              <Route path='/export' element={<ExportReports />} />
+              <Route path='/calendar' element={<AcademicCalendar />} />
+              <Route path='/settings' element={<SettingsPage />} />
+              <Route path='/students' element={<ListStudentComponent />} />
+              <Route path='/add-student' element={<StudentComponent />} />
+              <Route path='/edit-student/:id' element={<StudentComponent />} />
+              <Route path='/students/:id' element={<StudentProfile />} />
+              <Route path='/' element={<LoginComponent />} />
+            </Routes>
+          </Suspense>
+        </MainLayout>
       </BrowserRouter>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

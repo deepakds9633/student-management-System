@@ -9,7 +9,6 @@ import lombok.Data;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -19,7 +18,8 @@ public class Student {
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @MapsId
+    @JoinColumn(name = "id")
     private User user;
 
     private String course;
@@ -29,4 +29,9 @@ public class Student {
     private String semester;
 
     private String department;
+
+    private String phoneNumber;
+
+    @Column(length = 500)
+    private String address;
 }

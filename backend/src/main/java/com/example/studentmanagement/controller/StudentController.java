@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.studentmanagement.repository.UserRepository;
+import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, maxAge = 3600)
@@ -22,6 +24,17 @@ public class StudentController {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private Student getStudentFromPrincipal(Principal principal) {
+        if (principal == null)
+            return null;
+        return userRepository.findByUsername(principal.getName())
+                .flatMap(user -> studentService.getStudentByUserId(user.getId()))
+                .orElse(null);
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('STAFF')")
     public List<Student> getAllStudents() {
@@ -30,14 +43,44 @@ public class StudentController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
-    public Student getStudentById(@PathVariable("id") Long id) {
-        return studentService.getStudentById(id).orElseThrow(() -> new RuntimeException("Student not found"));
+    public Student getStudentById(@PathVariable("id") String id, Principal principal) {
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (!isStaff || id.equals("me")) {
+            Student student = getStudentFromPrincipal(principal);
+            if (student == null)
+                throw new RuntimeException("Authorized student profile not found");
+            return student;
+        }
+
+        try {
+            return studentService.getStudentById(Long.valueOf(id))
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid student ID");
+        }
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
-    public Student getStudentByUserId(@PathVariable("userId") Long userId) {
-        return studentService.getStudentByUserId(userId).orElseThrow(() -> new RuntimeException("Student not found"));
+    public Student getStudentByUserId(@PathVariable("userId") String userId, Principal principal) {
+        boolean isStaff = userRepository.findByUsername(principal.getName())
+                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+
+        if (!isStaff || userId.equals("me")) {
+            Student student = getStudentFromPrincipal(principal);
+            if (student == null)
+                throw new RuntimeException("Authorized student profile not found");
+            return student;
+        }
+
+        try {
+            return studentService.getStudentByUserId(Long.valueOf(userId))
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid user ID");
+        }
     }
 
     @PostMapping

@@ -2,11 +2,8 @@ import { useEffect, useState } from 'react';
 import AuthService from '../services/AuthService';
 import AssignmentService from '../services/AssignmentService';
 import { useNavigate } from 'react-router-dom';
-
-const S = {
-    card: { background: 'var(--mc-card)', border: '1px solid var(--mc-border)', borderRadius: '1rem', padding: '1.5rem' },
-    pill: { borderRadius: '9999px' }, muted: { color: 'var(--mc-text-muted)', fontSize: '0.8125rem' }
-};
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, Clock, CheckCircle, FileText, Download, BarChart2, Plus, X, Upload, Calendar, Paperclip, AlertCircle, TrendingUp, Filter } from 'lucide-react';
 
 const AssignmentPage = () => {
     const [user] = useState(AuthService.getCurrentUser());
@@ -21,145 +18,340 @@ const AssignmentPage = () => {
     const [msg, setMsg] = useState('');
     const [grading, setGrading] = useState(null);
     const [gradeForm, setGradeForm] = useState({ grade: '', feedback: '' });
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
     const isStaff = user?.roles?.includes('ROLE_STAFF');
 
-    useEffect(() => { if (!user) { navigate('/login'); return; } fetchData(); }, [activeTab]);
+    useEffect(() => {
+        if (!user) { navigate('/login'); return; }
+        fetchData();
+    }, [activeTab, user]);
 
     const fetchData = async () => {
+        setLoading(true);
         try {
-            if (activeTab === 'tasks') { const r = await AssignmentService.getAllTasks(); setTasks(r.data); if (!isStaff) { const s = await AssignmentService.getStudentSubmissions(user.id); setSubmissions(s.data); } }
-            else if (activeTab === 'submissions' && isStaff) { const r = await AssignmentService.getAllSubmissions(); setSubmissions(r.data); }
-            else if (activeTab === 'reports' && isStaff) { const r = await AssignmentService.getAnalytics(); setAnalytics(r.data); }
-        } catch (e) { console.error(e); }
+            if (activeTab === 'tasks') {
+                const r = await AssignmentService.getAllTasks();
+                setTasks(r.data);
+                if (!isStaff) {
+                    const s = await AssignmentService.getStudentSubmissions(user.id);
+                    setSubmissions(s.data);
+                }
+            } else if (activeTab === 'submissions' && isStaff) {
+                const r = await AssignmentService.getAllSubmissions();
+                setSubmissions(r.data);
+            } else if (activeTab === 'reports' && isStaff) {
+                const r = await AssignmentService.getAnalytics();
+                setAnalytics(r.data);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleCreateTask = async (e) => { e.preventDefault(); try { await AssignmentService.createTask(taskForm); setMsg('✅ Assignment created!'); setShowTaskForm(false); setTaskForm({ subject: '', title: '', description: '', deadline: '' }); fetchData(); } catch (err) { setMsg('❌ Failed'); } };
-    const handleSubmitSubmission = async (e) => { e.preventDefault(); try { const fd = new FormData(); fd.append('studentId', user.id); fd.append('taskId', showSubmitForm); if (file) fd.append('file', file); await AssignmentService.submitAssignment(fd); setMsg('✅ Submitted!'); setShowSubmitForm(null); setFile(null); fetchData(); } catch (err) { setMsg('❌ Failed'); } };
-    const handleGrade = async (id) => { try { await AssignmentService.gradeAssignment(id, gradeForm); setGrading(null); setGradeForm({ grade: '', feedback: '' }); fetchData(); } catch (e) { console.error(e); } };
-    const getStatusForTask = (tid) => { const s = submissions.find(x => x.task?.id === tid); return s ? s.status : 'PENDING'; };
-    const getGradeForTask = (tid) => { const s = submissions.find(x => x.task?.id === tid); return s ? s.grade : null; };
-    const getFeedbackForTask = (tid) => { const s = submissions.find(x => x.task?.id === tid); return s ? s.feedback : null; };
+    const handleCreateTask = async (e) => {
+        e.preventDefault();
+        try {
+            await AssignmentService.createTask(taskForm);
+            setMsg('✅ Assignment created successfully.');
+            setShowTaskForm(false);
+            setTaskForm({ subject: '', title: '', description: '', deadline: '' });
+            fetchData();
+            setTimeout(() => setMsg(''), 3000);
+        } catch (err) { setMsg('❌ Failed to create assignment.'); }
+    };
 
-    const sc = { SUBMITTED: { bg: 'rgba(59,130,246,0.1)', c: '#60a5fa' }, GRADED: { bg: 'rgba(34,197,94,0.1)', c: '#22c55e' }, PENDING: { bg: 'rgba(245,158,11,0.1)', c: '#f59e0b' } };
-    const tabs = [{ id: 'tasks', l: isStaff ? 'Manage Tasks' : 'My Assignments' }, ...(isStaff ? [{ id: 'submissions', l: 'Review Submissions' }, { id: 'reports', l: 'Reports & Analytics' }] : [])];
-    const inp = { background: 'var(--mc-bg)', border: '1px solid var(--mc-border-accent)', borderRadius: '0.5rem', padding: '0.625rem 0.875rem', color: 'var(--mc-text)', fontSize: '0.875rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
+    const handleSubmitSubmission = async (e) => {
+        e.preventDefault();
+        try {
+            const fd = new FormData();
+            fd.append('studentId', user.id);
+            fd.append('taskId', showSubmitForm);
+            if (file) fd.append('file', file);
+            await AssignmentService.submitAssignment(fd);
+            setMsg('✅ Assignment submitted successfully.');
+            setShowSubmitForm(null);
+            setFile(null);
+            fetchData();
+            setTimeout(() => setMsg(''), 3000);
+        } catch (err) { setMsg('❌ Failed to submit assignment.'); }
+    };
+
+    const handleGrade = async (id) => {
+        try {
+            await AssignmentService.gradeAssignment(id, gradeForm);
+            setGrading(null);
+            setGradeForm({ grade: '', feedback: '' });
+            fetchData();
+            setMsg('✅ Graded successfully.');
+            setTimeout(() => setMsg(''), 3000);
+        } catch (e) { setMsg('❌ Failed to grade.'); }
+    };
+
+    const statusConfig = {
+        SUBMITTED: { bg: 'var(--primary-dim)', c: 'var(--primary)', border: 'rgba(79, 70, 229, 0.2)', icon: <CheckCircle size={12} /> },
+        GRADED: { bg: 'var(--success-dim)', c: 'var(--success)', border: 'rgba(16, 185, 129, 0.2)', icon: <CheckCircle size={12} /> },
+        PENDING: { bg: 'var(--warning-dim)', c: 'var(--warning)', border: 'rgba(245, 158, 11, 0.2)', icon: <Clock size={12} /> }
+    };
+
+    const tabs = [
+        { id: 'tasks', label: isStaff ? 'Curriculum' : 'Assignments', icon: <BookOpen size={16} /> },
+        ...(isStaff ? [
+            { id: 'submissions', label: 'Grading Queue', icon: <FileText size={16} /> },
+            { id: 'reports', label: 'Analytics', icon: <BarChart2 size={16} /> }
+        ] : [])
+    ];
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--mc-bg)', color: 'var(--mc-text)', padding: '2rem 1.5rem' }}>
-            <div style={{ maxWidth: '72rem', margin: '0 auto' }}>
-                {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>LMS — Assignment Module</h1>
-                        <p style={S.muted}>{isStaff ? 'Staff Dashboard' : 'Student Dashboard'}</p>
-                    </div>
-                    <button onClick={() => navigate(-1)} style={{ ...S.pill, background: 'var(--mc-card)', border: '1px solid var(--mc-border-accent)', padding: '0.5rem 1.25rem', color: 'var(--mc-text)', fontSize: '0.8125rem', cursor: 'pointer' }}>← Back</button>
+        <div className="max-w-6xl mx-auto space-y-6">
+            <div className="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="flex items-center gap-2"><BookOpen size={24} className="text-primary" /> Learning Management</h1>
+                    <p>Track assignments, submissions, and academic performance.</p>
                 </div>
+                {isStaff && activeTab === 'tasks' && (
+                    <button onClick={() => setShowTaskForm(!showTaskForm)} className="btn-primary flex items-center gap-2">
+                        {showTaskForm ? <X size={18} /> : <Plus size={18} />} {showTaskForm ? 'Cancel' : 'Create Task'}
+                    </button>
+                )}
+            </div>
 
-                {/* Tabs */}
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    {tabs.map(t => <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ ...S.pill, padding: '0.625rem 1.25rem', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', border: activeTab === t.id ? 'none' : '1px solid var(--mc-border)', background: activeTab === t.id ? 'linear-gradient(135deg,#3b82f6,#2563eb)' : 'var(--mc-card)', color: activeTab === t.id ? '#fff' : 'var(--mc-text-muted)', boxShadow: activeTab === t.id ? '0 4px 15px rgba(59,130,246,0.25)' : 'none' }}>{t.l}</button>)}
-                </div>
+            <div className="tab-group w-full sm:w-auto p-1 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                {tabs.map(t => (
+                    <button key={t.id} onClick={() => setActiveTab(t.id)}
+                        className={`tab-btn flex items-center justify-center gap-2 px-6 py-2.5 !rounded-xl transition-all ${activeTab === t.id ? 'active !bg-white dark:!bg-slate-800 !shadow-sm' : ''}`}>
+                        {t.icon} <span className="text-xs font-black uppercase tracking-widest">{t.label}</span>
+                    </button>
+                ))}
+            </div>
 
-                {msg && <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.75rem', fontSize: '0.8125rem', background: msg.startsWith('✅') ? 'rgba(34,197,94,0.08)' : 'rgba(244,63,94,0.08)', color: msg.startsWith('✅') ? '#22c55e' : '#fb7185', border: `1px solid ${msg.startsWith('✅') ? 'rgba(34,197,94,0.15)' : 'rgba(244,63,94,0.15)'}` }}>{msg}</div>}
+            <AnimatePresence>
+                {msg && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                        className={`toast p-4 flex items-center gap-3 ${msg.includes('✅') ? 'toast-success' : 'toast-error'}`}>
+                        {msg.includes('✅') ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                        <span className="font-bold text-sm">{msg}</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                {activeTab === 'tasks' && (<div className="animate-fadeIn">
-                    {isStaff && <div style={{ marginBottom: '1.5rem' }}>
-                        <button onClick={() => setShowTaskForm(!showTaskForm)} className={showTaskForm ? '' : 'btn-gradient-blue'} style={showTaskForm ? { ...S.pill, background: 'var(--mc-card)', border: '1px solid var(--mc-border-accent)', padding: '0.625rem 1.5rem', color: 'var(--mc-text)', fontSize: '0.875rem', cursor: 'pointer' } : { padding: '0.625rem 1.5rem', fontSize: '0.875rem' }}>{showTaskForm ? '✕ Cancel' : '+ Create New Assignment'}</button>
-                        {showTaskForm && <form onSubmit={handleCreateTask} style={{ ...S.card, marginTop: '1.25rem' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                                <div><label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--mc-text-muted)', marginBottom: '0.375rem' }}>Subject</label><input required style={inp} value={taskForm.subject} onChange={e => setTaskForm({ ...taskForm, subject: e.target.value })} placeholder="e.g. IT" /></div>
-                                <div><label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--mc-text-muted)', marginBottom: '0.375rem' }}>Title</label><input required style={inp} value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} placeholder="Assignment Title" /></div>
-                            </div>
-                            <div style={{ marginBottom: '1rem' }}><label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--mc-text-muted)', marginBottom: '0.375rem' }}>Description</label><textarea style={{ ...inp, minHeight: 100, resize: 'vertical', borderRadius: '0.75rem' }} value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })} placeholder="Detailed instructions..." /></div>
-                            <div style={{ marginBottom: '1.25rem' }}><label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--mc-text-muted)', marginBottom: '0.375rem' }}>Deadline</label><input type="datetime-local" style={{ ...inp, ...S.pill, width: 'auto' }} value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} /></div>
-                            <button type="submit" className="btn-gradient-blue" style={{ width: '100%', padding: '0.875rem' }}>Publish Assignment</button>
-                        </form>}
-                    </div>}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {tasks.map(t => {
-                            const st = getStatusForTask(t.id), gr = getGradeForTask(t.id), fb = getFeedbackForTask(t.id), cfg = sc[st] || sc.PENDING; return (
-                                <div key={t.id} style={{ ...S.card, transition: 'border-color 0.2s' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem' }}>
-                                        <div style={{ flex: 1, minWidth: 200 }}>
-                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                                                <span style={{ ...S.pill, padding: '0.25rem 0.75rem', fontSize: '0.6875rem', fontWeight: 700, background: 'rgba(59,130,246,0.1)', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.subject}</span>
-                                                <span style={{ ...S.pill, padding: '0.25rem 0.75rem', fontSize: '0.6875rem', fontWeight: 600, background: cfg.bg, color: cfg.c }}>{st}</span>
-                                            </div>
-                                            <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#fff', margin: '0 0 0.375rem' }}>{t.title}</h3>
-                                            <p style={{ ...S.muted, margin: '0 0 0.75rem' }}>{t.description}</p>
-                                            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--mc-text-dim)' }}>
-                                                <span>📅 {new Date(t.createdAt).toLocaleDateString()}</span>
-                                                <span style={{ color: '#fb7185' }}>⏰ {new Date(t.deadline).toLocaleString()}</span>
-                                            </div>
-                                            {fb && <div style={{ marginTop: '0.75rem', padding: '0.625rem', background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: '0.625rem', fontSize: '0.8125rem', color: '#a78bfa', fontStyle: 'italic' }}>"{fb}"</div>}
+            {activeTab === 'tasks' && (
+                <div className="space-y-6">
+                    <AnimatePresence>
+                        {showTaskForm && (
+                            <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                                onSubmit={handleCreateTask} className="md-card p-6 border-2 border-primary/20 bg-primary/5 space-y-4 overflow-hidden">
+                                <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-primary"><Plus size={16} /> New Assignment</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="md:col-span-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest mb-1.5 block opacity-60">Subject Area</label>
+                                        <input required className="pill-input-dark !rounded-xl text-xs" placeholder="e.g. Physics" value={taskForm.subject} onChange={e => setTaskForm({ ...taskForm, subject: e.target.value })} />
+                                    </div>
+                                    <div className="md:col-span-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest mb-1.5 block opacity-60">Task Title</label>
+                                        <input required className="pill-input-dark !rounded-xl text-xs" placeholder="Title" value={taskForm.title} onChange={e => setTaskForm({ ...taskForm, title: e.target.value })} />
+                                    </div>
+                                    <div className="md:col-span-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest mb-1.5 block opacity-60">Submission Deadline</label>
+                                        <input required type="datetime-local" className="pill-input-dark !rounded-xl text-xs" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest mb-1.5 block opacity-60">Detailed Instructions</label>
+                                    <textarea required rows={3} className="pill-input-dark !rounded-xl text-xs min-h-[100px]" placeholder="Add details..." value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })} />
+                                </div>
+                                <div className="flex justify-end pt-4 border-t border-primary/10">
+                                    <button type="submit" className="btn-primary !py-2 !px-8">Publish Task</button>
+                                </div>
+                            </motion.form>
+                        )}
+                    </AnimatePresence>
+
+                    {loading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[1, 2].map(i => <div key={i} className="skeleton-loading h-48 rounded-2xl" />)}
+                        </div>
+                    ) : tasks.length === 0 ? (
+                        <div className="md-card py-20 text-center opacity-50">
+                            <BookOpen size={48} className="mx-auto mb-4" />
+                            <h3 className="font-bold">No tasks assigned</h3>
+                            <p className="text-xs">Enjoy your free time!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {tasks.map(t => {
+                                const sub = submissions.find(x => x.task?.id === t.id);
+                                const st = sub ? sub.status : 'PENDING';
+                                const cfg = statusConfig[st] || statusConfig.PENDING;
+                                return (
+                                    <motion.div key={t.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                        className="md-card p-5 group hover:border-primary/40 transition-all flex flex-col">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700">
+                                                {t.subject}
+                                            </span>
+                                            {!isStaff && (
+                                                <span className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border"
+                                                    style={{ background: cfg.bg, color: cfg.c, borderColor: cfg.border }}>
+                                                    {cfg.icon} {st}
+                                                </span>
+                                            )}
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem', justifyContent: 'center' }}>
-                                            {gr && <div style={{ textAlign: 'center', background: 'var(--mc-bg)', padding: '0.5rem 1.25rem', borderRadius: '1rem', border: '1px solid var(--mc-border)' }}><div style={{ fontSize: '0.5625rem', color: 'var(--mc-text-dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Grade</div><div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e' }}>{gr}</div></div>}
-                                            {!isStaff && st === 'PENDING' && <button onClick={() => setShowSubmitForm(t.id)} className="btn-gradient-blue" style={{ padding: '0.5rem 1.25rem', fontSize: '0.8125rem' }}>Submit Work</button>}
+                                        <h3 className="text-base font-bold mb-2 group-hover:text-primary transition-colors">{t.title}</h3>
+                                        <p className="text-xs opacity-60 line-clamp-2 mb-6 flex-grow">{t.description}</p>
+
+                                        <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                            <div className="flex justify-between items-center text-[10px] font-bold opacity-60">
+                                                <span className="flex items-center gap-1.5"><Calendar size={12} /> {new Date(t.createdAt).toLocaleDateString()}</span>
+                                                <span className="flex items-center gap-1.5 text-danger"><Clock size={12} /> {new Date(t.deadline).toLocaleDateString()}</span>
+                                            </div>
+
+                                            {!isStaff && st === 'PENDING' && showSubmitForm !== t.id && (
+                                                <button onClick={() => setShowSubmitForm(t.id)} className="btn-primary w-full text-xs py-2 flex items-center justify-center gap-2 !rounded-xl">
+                                                    <Upload size={14} /> Submit Work
+                                                </button>
+                                            )}
+
+                                            {showSubmitForm === t.id && (
+                                                <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmitSubmission}
+                                                    className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-primary/30 space-y-3">
+                                                    <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-primary/10 file:text-primary file:font-bold" />
+                                                    <div className="flex gap-2">
+                                                        <button type="submit" className="btn-primary flex-1 text-xs py-1.5 !rounded-lg">Upload</button>
+                                                        <button type="button" onClick={() => setShowSubmitForm(null)} className="p-1.5 rounded-lg border hover:bg-white dark:hover:bg-slate-800 transition-colors"><X size={14} /></button>
+                                                    </div>
+                                                </motion.form>
+                                            )}
+
+                                            {sub?.grade && (
+                                                <div className="p-3 rounded-xl bg-success-dim border border-success/20 flex items-center justify-between">
+                                                    <div>
+                                                        <label className="text-[9px] font-black uppercase tracking-widest text-success block opacity-80">Final Grade</label>
+                                                        <p className="text-xs italic opacity-60 truncate max-w-[150px]">{sub.feedback || 'Excellent work!'}</p>
+                                                    </div>
+                                                    <div className="text-xl font-black text-success pr-2">{sub.grade}</div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'submissions' && isStaff && (
+                <div className="space-y-4">
+                    {loading ? (
+                        [1, 2].map(i => <div key={i} className="skeleton-loading h-24 rounded-xl" />)
+                    ) : submissions.length === 0 ? (
+                        <div className="md-card py-20 text-center opacity-50">
+                            <FileText size={48} className="mx-auto mb-4" />
+                            <h3 className="font-bold">No submissions found</h3>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {submissions.map(s => (
+                                <div key={s.id} className="md-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 group">
+                                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                                        <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-xs text-white" style={{ background: 'var(--gradient-primary)' }}>
+                                            {s.student?.name?.[0]?.toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h4 className="font-bold text-sm">{s.student?.name}</h4>
+                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">{s.student?.department}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-[10px] font-bold opacity-60">
+                                                <span className="flex items-center gap-1.5 text-primary"><BookOpen size={12} /> {s.title}</span>
+                                                <span className="flex items-center gap-1.5"><Paperclip size={12} /> {s.fileName || 'Archive.zip'}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    {showSubmitForm === t.id && <form onSubmit={handleSubmitSubmission} style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--mc-border)', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                                        <input type="file" required onChange={e => setFile(e.target.files[0])} style={{ flex: 1, ...inp, borderRadius: '0.5rem' }} />
-                                        <button type="submit" style={{ ...S.pill, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', padding: '0.5rem 1rem', color: '#22c55e', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}>Upload</button>
-                                        <button type="button" onClick={() => setShowSubmitForm(null)} style={{ background: 'none', border: 'none', color: 'var(--mc-text-muted)', cursor: 'pointer' }}>✕</button>
-                                    </form>}
+
+                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-end pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-800 sm:pl-6">
+                                        {s.status === 'SUBMITTED' ? (
+                                            grading === s.id ? (
+                                                <div className="flex gap-2 w-full sm:w-auto">
+                                                    <select value={gradeForm.grade} onChange={e => setGradeForm({ ...gradeForm, grade: e.target.value })} className="pill-input-dark !py-1.5 !px-3 text-xs min-w-[80px]">
+                                                        <option value="">Grade</option>
+                                                        <option value="A+">A+</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                                                    </select>
+                                                    <input placeholder="Short feedback..." value={gradeForm.feedback} onChange={e => setGradeForm({ ...gradeForm, feedback: e.target.value })} className="pill-input-dark !py-1.5 px-3 text-xs flex-1 sm:w-48" />
+                                                    <button onClick={() => handleGrade(s.id)} className="btn-primary py-1.5 px-4 text-xs">Save</button>
+                                                    <button onClick={() => setGrading(null)} className="p-1.5 rounded-lg border hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><X size={16} /></button>
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => setGrading(s.id)} className="btn-primary !py-2 !px-6 text-xs flex items-center gap-2">
+                                                    <TrendingUp size={14} /> Grade Work
+                                                </button>
+                                            )
+                                        ) : (
+                                            <div className="flex items-center gap-5 bg-success-dim border border-success/20 px-5 py-2.5 rounded-2xl">
+                                                <div className="text-2xl font-black text-success">{s.grade}</div>
+                                                <div className="text-[10px] italic font-semibold opacity-60 max-w-[200px] leading-tight text-right">
+                                                    {s.feedback || 'Successfully validated.'}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>)}
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
 
-                {activeTab === 'submissions' && (<div className="animate-fadeIn" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {submissions.length === 0 && <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--mc-text-dim)' }}>No submissions to review.</div>}
-                    {submissions.map(s => <div key={s.id} style={S.card}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem' }}>
-                            <div>
-                                <div style={{ marginBottom: '0.375rem' }}><strong style={{ fontSize: '1rem' }}>{s.student?.name}</strong> <span style={{ color: 'var(--mc-text-dim)', fontSize: '0.8125rem' }}>• {s.student?.department} IT</span></div>
-                                <div style={{ color: '#60a5fa', fontWeight: 500, marginBottom: '0.625rem' }}>{s.title} ({s.subject})</div>
-                                <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.75rem', color: 'var(--mc-text-dim)' }}><span>📎 {s.fileName || 'No file'}</span><span>🕒 {new Date(s.submittedAt).toLocaleString()}</span></div>
+            {activeTab === 'reports' && isStaff && (
+                <div className="space-y-6">
+                    {loading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            {[1, 2, 3].map(i => <div key={i} className="skeleton-loading h-32 rounded-2xl" />)}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2 space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {analytics.map(st => (
+                                        <div key={st.subject} className="md-card p-6 border-b-4 border-primary/20">
+                                            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2 block">{st.subject}</label>
+                                            <div className="flex justify-between items-end">
+                                                <div className="text-3xl font-black text-primary tracking-tighter">{st.averageGrade.toFixed(2)}</div>
+                                                <div className="text-[10px] font-black uppercase bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/10">
+                                                    {st.submissionCount} submissions
+                                                </div>
+                                            </div>
+                                            <div className="mt-4 w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
+                                                <motion.div initial={{ width: 0 }} animate={{ width: `${(st.averageGrade / 100) * 100}%` }} className="h-full bg-primary rounded-full" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                {s.status === 'SUBMITTED' ? (grading === s.id ? <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                    <select value={gradeForm.grade} onChange={e => setGradeForm({ ...gradeForm, grade: e.target.value })} style={{ ...inp, width: 'auto', borderRadius: '0.5rem', padding: '0.375rem 0.5rem' }}><option value="">Grade</option><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option></select>
-                                    <input placeholder="Feedback" value={gradeForm.feedback} onChange={e => setGradeForm({ ...gradeForm, feedback: e.target.value })} style={{ ...inp, width: 120, borderRadius: '0.5rem', padding: '0.375rem 0.625rem' }} />
-                                    <button onClick={() => handleGrade(s.id)} style={{ ...S.pill, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', padding: '0.375rem 0.75rem', color: '#22c55e', fontWeight: 600, cursor: 'pointer', fontSize: '0.8125rem' }}>Save</button>
-                                    <button onClick={() => setGrading(null)} style={{ background: 'none', border: 'none', color: 'var(--mc-text-muted)', cursor: 'pointer' }}>✕</button>
-                                </div> : <button onClick={() => setGrading(s.id)} className="btn-gradient-blue" style={{ padding: '0.5rem 1.25rem', fontSize: '0.8125rem' }}>Review & Grade</button>
-                                ) : <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.15)', padding: '0.5rem 0.875rem', borderRadius: '1rem' }}>
-                                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#22c55e' }}>{s.grade}</div>
-                                    <div style={{ width: 1, height: 20, background: 'rgba(34,197,94,0.2)' }} />
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--mc-text-muted)', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.feedback}</div>
-                                </div>}
+
+                            <div className="lg:col-span-1 space-y-4">
+                                <div className="md-card p-6 bg-primary/5 border border-primary/10">
+                                    <h3 className="font-bold text-sm mb-4">Export Reports</h3>
+                                    <div className="space-y-2">
+                                        <button className="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all group">
+                                            <span className="text-xs font-bold opacity-60">Full Academic Excel</span>
+                                            <Download size={16} className="text-primary group-hover:scale-110 transition-transform" />
+                                        </button>
+                                        <button className="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all group">
+                                            <span className="text-xs font-bold opacity-60">Performance PDF</span>
+                                            <FileText size={16} className="text-danger group-hover:scale-110 transition-transform" />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>)}
-                </div>)}
-
-                {activeTab === 'reports' && (<div className="animate-fadeIn" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '1rem' }}>
-                        {analytics.map(st => <div key={st.subject} className="mc-stat-card" style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
-                            <div style={{ fontSize: '0.625rem', fontWeight: 600, color: 'var(--mc-text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{st.subject} Average</div>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#60a5fa', marginBottom: '0.5rem' }}>{st.averageGrade.toFixed(2)}</div>
-                            <div style={{ fontSize: '0.8125rem', color: 'var(--mc-text-dim)' }}>{st.submissionCount} Submissions</div>
-                        </div>)}
-                    </div>
-                    <div style={S.card}>
-                        <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#fff', margin: '0 0 1.25rem' }}>Course Performance</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                            {analytics.map(st => <div key={st.subject + 'b'}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.8125rem' }}><span style={{ fontWeight: 500 }}>{st.subject}</span><span style={{ color: 'var(--mc-text-muted)' }}>{st.averageGrade.toFixed(1)} / 4.0</span></div>
-                                <div style={{ width: '100%', height: 8, background: 'var(--mc-bg)', borderRadius: '9999px', overflow: 'hidden' }}><div style={{ height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg,#3b82f6,#60a5fa)', width: `${(st.averageGrade / 4) * 100}%`, transition: 'width 1s' }} /></div>
-                            </div>)}
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                        <button className="btn-gradient-blue" style={{ flex: 1, minWidth: 200, padding: '0.875rem' }}>📥 Download Excel</button>
-                        <button style={{ flex: 1, minWidth: 200, padding: '0.875rem', ...S.pill, background: 'linear-gradient(135deg,#f43f5e,#e11d48)', border: 'none', color: '#fff', fontWeight: 600, fontSize: '0.9375rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(244,63,94,0.3)' }}>📄 Download PDF</button>
-                    </div>
-                </div>)}
-            </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

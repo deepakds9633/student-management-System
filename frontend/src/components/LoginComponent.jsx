@@ -1,6 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../services/AuthService";
+import { motion, AnimatePresence } from "framer-motion";
+import { GraduationCap, Briefcase, ShieldCheck, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, Users, BarChart3, Award } from "lucide-react";
+
+/* ── Floating Particle ── */
+const Particle = ({ style }) => (
+    <div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+            ...style,
+            animation: `particle-float ${style.duration}s linear infinite`,
+            animationDelay: `${style.delay}s`,
+        }}
+    />
+);
+
+/* ── Hero Feature Card ── */
+const FeatureCard = ({ icon, title, value, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay, duration: 0.5 }}
+        className="flex items-center gap-3 p-3 rounded-xl"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+    >
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+            {icon}
+        </div>
+        <div>
+            <p className="text-white font-bold text-sm">{value}</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{title}</p>
+        </div>
+    </motion.div>
+);
 
 const LoginComponent = () => {
     const [username, setUsername] = useState("");
@@ -10,39 +43,41 @@ const LoginComponent = () => {
     const [role, setRole] = useState("STUDENT");
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
-
     const navigate = useNavigate();
+
+    const particles = Array.from({ length: 18 }, (_, i) => ({
+        width: Math.random() * 6 + 2,
+        left: Math.random() * 100,
+        duration: Math.random() * 15 + 10,
+        delay: Math.random() * -20,
+        background: i % 3 === 0
+            ? 'rgba(99,102,241,0.6)'
+            : i % 3 === 1
+                ? 'rgba(34,211,238,0.5)'
+                : 'rgba(168,85,247,0.5)',
+    }));
 
     const handleLogin = (e) => {
         e.preventDefault();
         setMessage("");
         setLoading(true);
-
         AuthService.login(username, password).then(
             (data) => {
                 const userRoles = data.roles;
                 if (userRoles.includes("ROLE_" + role)) {
-                    if (role === "ADMIN") {
-                        navigate("/admin-dashboard");
-                    } else if (role === "STAFF") {
-                        navigate("/staff-dashboard");
-                    } else {
-                        navigate("/student-dashboard");
-                    }
+                    if (role === "ADMIN") navigate("/admin-dashboard");
+                    else if (role === "STAFF") navigate("/staff-dashboard");
+                    else navigate("/student-dashboard");
                     window.location.reload();
                 } else {
                     setLoading(false);
-                    setMessage("Role mismatch! Please select correct role.");
+                    setMessage("Role mismatch! Please select the correct role.");
                     AuthService.logout();
                 }
             },
             (error) => {
                 const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
+                    (error.response?.data?.message) || error.message || error.toString();
                 setLoading(false);
                 setMessage(resMessage);
             }
@@ -50,221 +85,260 @@ const LoginComponent = () => {
     };
 
     const roles = [
-        {
-            key: 'STUDENT', label: 'Student', desc: 'Academics',
-            icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" /></svg>,
-            color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.4)'
-        },
-        {
-            key: 'STAFF', label: 'Staff', desc: 'Management',
-            icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
-            color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)', border: 'rgba(34, 197, 94, 0.4)'
-        },
-        {
-            key: 'ADMIN', label: 'Admin', desc: 'System',
-            icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
-            color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.4)'
-        }
+        { key: 'STUDENT', label: 'Student', icon: <GraduationCap size={16} />, color: '#6366f1' },
+        { key: 'STAFF', label: 'Faculty', icon: <Briefcase size={16} />, color: '#10b981' },
+        { key: 'ADMIN', label: 'Admin', icon: <ShieldCheck size={16} />, color: '#f59e0b' },
     ];
 
+    const activeRole = roles.find(r => r.key === role);
+
     return (
-        <div style={{ minHeight: '100vh', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-            {/* Ambient Background */}
-            <div className="ambient-bg">
-                <div className="ambient-orb ambient-orb-1"></div>
-                <div className="ambient-orb ambient-orb-2"></div>
-                <div className="ambient-orb ambient-orb-3"></div>
+        <div className="min-h-screen flex" style={{ background: 'var(--bg-base)' }}>
+
+            {/* ── LEFT HERO PANEL ── */}
+            <div
+                className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden p-10"
+                style={{ background: 'var(--gradient-hero)' }}
+            >
+                {/* Mesh gradient overlay */}
+                <div className="absolute inset-0" style={{ background: 'var(--gradient-mesh)', opacity: 0.8 }} />
+
+                {/* Particles */}
+                <div className="absolute inset-0 overflow-hidden">
+                    {particles.map((p, i) => (
+                        <Particle key={i} style={{
+                            width: p.width,
+                            height: p.width,
+                            left: `${p.left}%`,
+                            bottom: '-20px',
+                            background: p.background,
+                            duration: p.duration,
+                            delay: p.delay,
+                        }} />
+                    ))}
+                </div>
+
+                {/* Glowing orbs */}
+                <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full opacity-10 pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)', filter: 'blur(40px)', animation: 'breathe 6s ease-in-out infinite' }} />
+                <div className="absolute bottom-1/3 right-1/4 w-60 h-60 rounded-full opacity-8 pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, #22d3ee 0%, transparent 70%)', filter: 'blur(40px)', animation: 'breathe 8s ease-in-out infinite 2s' }} />
+
+                {/* Brand */}
+                <div className="relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-3 mb-2"
+                    >
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 16px rgba(79,70,229,0.5)' }}>
+                            <GraduationCap size={20} className="text-white" />
+                        </div>
+                        <span className="text-white font-black text-xl tracking-tight">EduVerse</span>
+                    </motion.div>
+                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>Management Portal</p>
+                </div>
+
+                {/* Hero Headline */}
+                <div className="relative z-10">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-4xl font-black text-white leading-tight mb-4"
+                    >
+                        Your Academic<br />
+                        <span style={{ background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                            Universe Awaits
+                        </span>
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="text-sm leading-relaxed mb-8"
+                        style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 320 }}
+                    >
+                        A unified enterprise platform for students, faculty, and administrators to manage the full academic lifecycle.
+                    </motion.p>
+
+                    {/* Feature stats */}
+                    <div className="grid grid-cols-1 gap-3 max-w-xs">
+                        <FeatureCard icon={<Users size={16} className="text-white" />} title="Active Users" value="2,400+ Members" delay={0.5} />
+                        <FeatureCard icon={<BarChart3 size={16} className="text-white" />} title="Analytics" value="Real-time Insights" delay={0.65} />
+                        <FeatureCard icon={<Award size={16} className="text-white" />} title="Institution Grade" value="Enterprise Platform" delay={0.8} />
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="relative z-10">
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                        © 2026 EduVerse. Enterprise-grade academic management.
+                    </p>
+                </div>
             </div>
 
-            {/* Main Content */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', position: 'relative', zIndex: 10 }}>
-                <div style={{ maxWidth: 420, width: '100%' }} className="animate-fadeInUp">
+            {/* ── RIGHT AUTH PANEL ── */}
+            <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10 relative">
 
-                    {/* Premium Glass Card */}
-                    <div className="premium-glass" style={{ padding: '2.5rem 2rem' }}>
+                {/* Background subtle gradient */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                    background: 'radial-gradient(ellipse at 60% 30%, var(--primary-dim) 0%, transparent 60%)'
+                }} />
 
-                        {/* Logo & Heading */}
-                        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                            <div style={{
-                                width: 56, height: 56, borderRadius: '1rem',
-                                background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02))',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                marginBottom: '1.25rem',
-                                boxShadow: '0 8px 30px rgba(0,0,0,0.5), inset 0 2px 0 0 rgba(255,255,255,0.05)'
-                            }}>
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-                                </svg>
-                            </div>
-                            <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: '#fff', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-                                Welcome Back
-                            </h1>
-                            <p style={{ fontSize: '0.95rem', color: '#94a3b8', marginTop: '0.5rem' }}>
-                                Sign in to your portal
-                            </p>
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full max-w-[400px] relative z-10"
+                >
+                    {/* Mobile brand */}
+                    <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                            <GraduationCap size={16} className="text-white" />
                         </div>
+                        <span className="font-black text-lg tracking-tight" style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>EduVerse</span>
+                    </div>
 
-                        {/* Role Selector Grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '2rem' }}>
+                    {/* Header */}
+                    <div className="mb-7">
+                        <h2 className="text-2xl font-black mb-1" style={{ color: 'var(--text-primary)' }}>Welcome back</h2>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sign in to your {activeRole?.label.toLowerCase()} account</p>
+                    </div>
+
+                    {/* Glass Card */}
+                    <div
+                        className="p-6 rounded-2xl"
+                        style={{
+                            background: 'var(--glass-bg-strong)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            border: '1px solid var(--glass-border)',
+                            boxShadow: 'var(--glass-shadow)'
+                        }}
+                    >
+                        {/* Role selector */}
+                        <div
+                            className="grid grid-cols-3 gap-1.5 p-1 rounded-xl mb-6"
+                            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
+                        >
                             {roles.map(r => (
                                 <button
                                     key={r.key}
                                     type="button"
                                     onClick={() => setRole(r.key)}
-                                    style={{
-                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
-                                        padding: '0.875rem 0.25rem',
-                                        borderRadius: '1rem',
-                                        background: role === r.key ? r.bg : 'rgba(255,255,255,0.02)',
-                                        border: role === r.key ? `1px solid ${r.border}` : '1px solid rgba(255,255,255,0.05)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        color: role === r.key ? r.color : '#64748b',
-                                        transform: role === r.key ? 'translateY(-2px)' : 'none',
-                                        boxShadow: role === r.key ? `0 8px 20px -5px ${r.bg}` : 'none'
+                                    className="flex flex-col items-center justify-center py-2.5 px-1 rounded-lg text-xs font-semibold transition-all duration-200"
+                                    style={role === r.key ? {
+                                        background: 'var(--bg-surface)',
+                                        color: r.color,
+                                        boxShadow: 'var(--shadow-sm)',
+                                        border: `1px solid ${r.color}30`
+                                    } : {
+                                        color: 'var(--text-muted)',
+                                        border: '1px solid transparent'
                                     }}
                                 >
-                                    <div style={{ transform: role === r.key ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.3s ease' }}>
-                                        {r.icon}
-                                    </div>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.02em' }}>
-                                        {r.label}
-                                    </span>
+                                    <span className="mb-1">{r.icon}</span>
+                                    {r.label}
                                 </button>
                             ))}
                         </div>
 
-                        <form onSubmit={handleLogin}>
+                        <form onSubmit={handleLogin} className="space-y-4">
                             {/* Username */}
-                            <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
-                                <div style={{
-                                    position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)',
-                                    color: '#64748b', display: 'flex', alignItems: 'center'
-                                }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                        <circle cx="12" cy="7" r="4" />
-                                    </svg>
+                            <div>
+                                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Username</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: 'var(--text-muted)' }}>
+                                        <Mail size={16} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="pill-input-dark !rounded-xl !pl-9"
+                                        placeholder="Enter your username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        required
+                                    />
                                 </div>
-                                <input
-                                    type="text"
-                                    className="pill-input-dark"
-                                    style={{ paddingLeft: '3rem', height: '3.25rem', background: 'rgba(0,0,0,0.2)' }}
-                                    placeholder="Username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
                             </div>
 
                             {/* Password */}
-                            <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                                <div style={{
-                                    position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)',
-                                    color: '#64748b', display: 'flex', alignItems: 'center'
-                                }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                    </svg>
+                            <div>
+                                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Password</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: 'var(--text-muted)' }}>
+                                        <Lock size={16} />
+                                    </div>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        className="pill-input-dark !rounded-xl !pl-9 !pr-10"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center transition-colors"
+                                        style={{ color: 'var(--text-muted)' }}
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
                                 </div>
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    className="pill-input-dark"
-                                    style={{ paddingLeft: '3rem', paddingRight: '3rem', height: '3.25rem', background: 'rgba(0,0,0,0.2)' }}
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    style={{
-                                        position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)',
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        color: '#64748b', display: 'flex', alignItems: 'center', padding: 0,
-                                        transition: 'color 0.2s ease'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = '#64748b'}
-                                >
-                                    {showPassword ? (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                                            <line x1="1" y1="1" x2="23" y2="23" />
-                                        </svg>
-                                    ) : (
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                    )}
-                                </button>
                             </div>
 
                             {/* Options */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', fontSize: '0.8125rem' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: '#94a3b8', transition: 'color 0.2s' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = '#cbd5e1'}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
+                            <div className="flex items-center justify-between">
+                                <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
-                                        style={{ accentColor: '#3b82f6', width: 16, height: 16, cursor: 'pointer' }}
+                                        className="w-4 h-4 rounded accent-[var(--primary)]"
                                     />
-                                    Remember me
+                                    <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Remember me</span>
                                 </label>
-                                <a href="#" style={{ color: '#fff', textDecoration: 'none', fontWeight: 500, opacity: 0.8, transition: 'opacity 0.2s' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
-                                    onMouseLeave={(e) => e.currentTarget.style.opacity = 0.8}>
-                                    Recovery
+                                <a href="#" className="text-xs font-semibold transition-colors" style={{ color: 'var(--primary)' }}>
+                                    Forgot password?
                                 </a>
                             </div>
 
                             {/* Submit */}
-                            <button type="submit" className="btn-gradient-blue" disabled={loading}
-                                style={{
-                                    width: '100%', padding: '1rem', fontSize: '1rem',
-                                    background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
-                                    boxShadow: '0 8px 25px -5px rgba(59, 130, 246, 0.5), inset 0 1px 1px rgba(255,255,255,0.2)'
-                                }}>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full btn-primary !py-3 !rounded-xl text-sm mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
                                 {loading ? (
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin">
-                                            <circle cx="12" cy="12" r="10" strokeDasharray="60" strokeDashoffset="15" />
-                                        </svg>
+                                    <span className="flex items-center justify-center gap-2">
+                                        <Loader2 className="animate-spin" size={18} />
                                         Authenticating...
                                     </span>
-                                ) : "Sign In"}
+                                ) : `Sign In as ${activeRole?.label}`}
                             </button>
 
-                            {/* Error Message */}
-                            {message && (
-                                <div style={{
-                                    marginTop: '1.25rem', padding: '0.875rem',
-                                    background: 'rgba(244, 63, 94, 0.1)',
-                                    border: '1px solid rgba(244, 63, 94, 0.2)',
-                                    borderRadius: '0.75rem', color: '#fda4af',
-                                    fontSize: '0.8125rem', textAlign: 'center',
-                                    backdropFilter: 'blur(10px)'
-                                }}>
-                                    {message}
-                                </div>
-                            )}
+                            {/* Error */}
+                            <AnimatePresence>
+                                {message && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="toast toast-error text-sm"
+                                    >
+                                        {message}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </form>
                     </div>
 
-                    {/* Contact Info Footer */}
-                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                        <p style={{ fontSize: '0.8125rem', color: '#64748b' }}>
-                            Secure Portal Access • <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>Help</a>
-                        </p>
-                    </div>
-                </div>
+                    <p className="text-center text-xs mt-6" style={{ color: 'var(--text-muted)' }}>
+                        © 2026 EduVerse Student Management System
+                    </p>
+                </motion.div>
             </div>
         </div>
     );

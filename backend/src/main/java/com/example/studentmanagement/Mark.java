@@ -22,8 +22,8 @@ public class Mark {
     @Column(nullable = false)
     private String examType; // "Internal", "Assignment", "Final"
 
-    @Column(nullable = false)
-    private int marksObtained;
+    @Column(nullable = true)
+    private Integer marksObtained;
 
     @Column(nullable = false)
     private int maxMarks;

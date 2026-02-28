@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Bell, Clock, ChevronRight, ShieldAlert, Zap, Pin, Calendar, FileText, X } from 'lucide-react';
 import AnnouncementService from '../services/AnnouncementService';
 import AuthService from '../services/AuthService';
 
@@ -15,11 +17,10 @@ const NotificationBell = () => {
     useEffect(() => {
         if (!user) return;
         fetchCount();
-        const interval = setInterval(fetchCount, 30000); // Poll every 30s
+        const interval = setInterval(fetchCount, 30000);
         return () => clearInterval(interval);
     }, []);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -47,10 +48,10 @@ const NotificationBell = () => {
     };
 
     const openDropdown = async () => {
-        setShowDropdown(!showDropdown);
-        if (!showDropdown) {
+        const nextState = !showDropdown;
+        setShowDropdown(nextState);
+        if (nextState) {
             setLoading(true);
-            // Clear count immediately on open for responsiveness
             setCount(0);
             localStorage.setItem('lastSeenAnnouncement', new Date().toISOString().split('.')[0]);
             try {
@@ -62,7 +63,6 @@ const NotificationBell = () => {
     };
 
     const handleViewAll = () => {
-        // Mark as seen
         localStorage.setItem('lastSeenAnnouncement', new Date().toISOString().split('.')[0]);
         setCount(0);
         setShowDropdown(false);
@@ -74,101 +74,92 @@ const NotificationBell = () => {
         navigate(`/notices/${id}`);
     };
 
-    const priorityDot = {
-        URGENT: 'bg-red-500',
-        HIGH: 'bg-amber-500',
-        NORMAL: 'bg-blue-500'
+    const priorityColor = {
+        URGENT: 'var(--danger)',
+        HIGH: 'var(--warning)',
+        NORMAL: 'var(--primary)'
     };
 
-    const categoryIcons = { NOTICE: '📌', ANNOUNCEMENT: '📢', EXAM: '📝', EVENT: '🎉', URGENT: '⚠️' };
+    const categoryIcons = {
+        NOTICE: <Pin size={12} />,
+        ANNOUNCEMENT: <Bell size={12} />,
+        EXAM: <FileText size={12} />,
+        EVENT: <Calendar size={12} />,
+        URGENT: <Zap size={12} />
+    };
 
     if (!user) return null;
 
     return (
         <div className="relative" ref={dropdownRef}>
-            {/* Bell Button */}
-            <button
-                onClick={openDropdown}
-                className="relative p-2 rounded-xl hover:bg-white/10 transition-all group"
-                title="Notifications"
-            >
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                {/* Badge */}
-                {count > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1 animate-pulse shadow-lg shadow-red-500/50">
-                        {count > 9 ? '9+' : count}
-                    </span>
-                )}
+            <button onClick={openDropdown}
+                className="relative p-2.5 rounded-xl transition-all hover:bg-slate-100 dark:hover:bg-slate-800 group active:scale-95">
+                <Bell size={20} className="text-slate-400 group-hover:text-primary transition-colors" />
+                <AnimatePresence>
+                    {count > 0 && (
+                        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                            className="absolute top-2 right-2 min-w-[12px] h-[12px] bg-danger rounded-full border-2 border-white dark:border-[#0f172a] shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                    )}
+                </AnimatePresence>
             </button>
 
-            {/* Dropdown */}
-            {showDropdown && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50 animate-in">
-                    {/* Header */}
-                    <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">Notifications</h3>
-                        {count > 0 && (
-                            <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
-                                {count} new
-                            </span>
-                        )}
-                    </div>
+            <AnimatePresence>
+                {showDropdown && (
+                    <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 top-full mt-3 w-80 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden z-[100]">
 
-                    {/* Items */}
-                    <div className="max-h-80 overflow-y-auto">
-                        {loading ? (
-                            <div className="p-6 text-center text-gray-500 text-sm">Loading...</div>
-                        ) : recent.length === 0 ? (
-                            <div className="p-6 text-center text-gray-500 text-sm">No announcements yet</div>
-                        ) : (
-                            recent.map(item => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => handleClickItem(item.id)}
-                                    className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/[0.03] last:border-0 group/item"
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <div className="mt-0.5">
-                                            <div className={`w-2 h-2 rounded-full ${priorityDot[item.priority] || priorityDot.NORMAL}`} />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-1.5 mb-0.5">
-                                                <span className="text-xs">{categoryIcons[item.category] || '📌'}</span>
-                                                <p className="text-xs font-medium text-white truncate">{item.title}</p>
+                        <div className="px-6 py-5 border-b border-slate-50 dark:border-slate-800/50 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+                            <h3 className="text-xs font-black uppercase tracking-widest opacity-60">Intelligence Feed</h3>
+                            {recent.length > 0 && (
+                                <button onClick={() => setRecent([])} className="text-[9px] font-black uppercase tracking-widest text-primary opacity-60 hover:opacity-100">Clear</button>
+                            )}
+                        </div>
+
+                        <div className="max-h-[360px] overflow-y-auto scrollbar-hide py-2">
+                            {loading ? (
+                                <div className="p-10 flex flex-col items-center gap-3">
+                                    <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-20">Fetching Data...</p>
+                                </div>
+                            ) : recent.length === 0 ? (
+                                <div className="p-10 text-center space-y-3 opacity-30">
+                                    <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-2xl mx-auto flex items-center justify-center"><Bell size={20} /></div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest">No active transmissions</p>
+                                </div>
+                            ) : (
+                                recent.map((item, idx) => (
+                                    <motion.button initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}
+                                        key={item.id} onClick={() => handleClickItem(item.id)}
+                                        className="w-full text-left px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all border-b border-slate-50 dark:border-slate-800/30 last:border-0 group">
+                                        <div className="flex gap-4">
+                                            <div className="mt-1">
+                                                <div className="w-1.5 h-1.5 rounded-full" style={{ background: priorityColor[item.priority] || priorityColor.NORMAL, boxShadow: `0 0 8px ${priorityColor[item.priority] || priorityColor.NORMAL}` }} />
                                             </div>
-                                            <p className="text-[11px] text-gray-500 line-clamp-1">{item.message}</p>
-                                            <p className="text-[10px] text-gray-600 mt-1">
-                                                {item.timestamp && new Date(item.timestamp).toLocaleDateString()} • {item.postedBy}
-                                            </p>
+                                            <div className="flex-1 space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="opacity-40">{categoryIcons[item.category]}</span>
+                                                    <p className="text-[11px] font-black tracking-tight truncate group-hover:text-primary transition-colors">{item.title}</p>
+                                                </div>
+                                                <p className="text-[10px] font-medium opacity-50 line-clamp-1">{item.message}</p>
+                                                <div className="flex items-center gap-2 pt-1 text-[9px] font-black uppercase tracking-widest opacity-20">
+                                                    <Clock size={8} /> {item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'Just now'}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </button>
-                            ))
-                        )}
-                    </div>
+                                    </motion.button>
+                                ))
+                            )}
+                        </div>
 
-                    {/* Footer */}
-                    <div className="px-4 py-2.5 border-t border-white/5">
-                        <button
-                            onClick={handleViewAll}
-                            className="w-full text-center text-xs text-indigo-400 hover:text-indigo-300 font-medium py-1 transition-colors"
-                        >
-                            View All Announcements →
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            <style>{`
-                @keyframes animate-in {
-                    from { opacity: 0; transform: translateY(-8px) scale(0.95); }
-                    to { opacity: 1; transform: translateY(0) scale(1); }
-                }
-                .animate-in { animation: animate-in 0.2s ease-out; }
-            `}</style>
+                        <div className="p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-50 dark:border-slate-800/50">
+                            <button onClick={handleViewAll}
+                                className="w-full py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-primary shadow-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                                Expand Registry <ChevronRight size={12} />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

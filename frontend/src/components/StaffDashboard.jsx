@@ -1,207 +1,143 @@
-import { useEffect, useState } from 'react';
-import AuthService from '../services/AuthService';
-import AnalyticsService from '../services/AnalyticsService';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import AuthService from '../services/AuthService';
+import { Users, ClipboardList, BarChart3, Bell, ChevronRight, BookOpen, Briefcase } from 'lucide-react';
+
+const API = 'http://localhost:8080/api';
+const fadeUp = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } } };
 
 const StaffDashboard = () => {
-    const [user, setUser] = useState(null);
+    const [user] = useState(AuthService.getCurrentUser());
+    const [students, setStudents] = useState([]);
+    const [notices, setNotices] = useState([]);
     const navigate = useNavigate();
+    const headers = { Authorization: `Bearer ${user?.token}` };
 
     useEffect(() => {
-        const currentUser = AuthService.getCurrentUser();
-        if (!currentUser) { navigate("/login"); }
-        setUser(currentUser);
-    }, [navigate]);
+        if (!user) { navigate('/login'); return; }
+        const fetch = async () => {
+            try {
+                const [sRes, nRes] = await Promise.all([
+                    axios.get(`${API}/students`, { headers }).catch(() => ({ data: [] })),
+                    axios.get(`${API}/notices`, { headers }).catch(() => ({ data: [] })),
+                ]);
+                setStudents(sRes.data);
+                setNotices(nRes.data.slice(0, 4));
+            } catch { /* silent */ }
+        };
+        fetch();
+    }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('user');
-        navigate('/login');
+    const getGreeting = () => {
+        const h = new Date().getHours();
+        if (h < 12) return 'Good Morning';
+        if (h < 17) return 'Good Afternoon';
+        return 'Good Evening';
     };
 
-    const modules = [
-        {
-            title: 'Students',
-            desc: 'Manage student records',
-            actionText: 'Manage students →',
-            link: '/students',
-            icon: '👥',
-            bgColor: '#3b82f6'
-        },
-        {
-            title: 'Attendance',
-            desc: 'Mark & view attendance',
-            actionText: 'Take attendance →',
-            link: '/attendance',
-            icon: '📅',
-            bgColor: '#22c55e'
-        },
-        {
-            title: 'Marks',
-            desc: 'Enter & manage marks',
-            actionText: 'Enter marks →',
-            link: '/marks',
-            icon: '📝',
-            bgColor: '#d946ef'
-        },
-        {
-            title: 'Analytics',
-            desc: 'Performance insights',
-            actionText: 'View analytics →',
-            link: '/analytics',
-            icon: '📊',
-            bgColor: '#06b6d4'
-        },
-        {
-            title: 'Leave Requests',
-            desc: 'Approve/reject leaves',
-            actionText: 'Manage leaves →',
-            link: '/leaves',
-            icon: '📋',
-            bgColor: '#f97316'
-        },
-        {
-            title: 'Notice Board',
-            desc: 'Post announcements',
-            actionText: 'Post notices →',
-            link: '/notices',
-            icon: '📌',
-            bgColor: '#ec4899'
-        },
-        {
-            title: 'Assignments',
-            desc: 'Review & grade work',
-            actionText: 'Review assignments →',
-            link: '/assignments',
-            icon: '📚',
-            bgColor: '#8b5cf6'
-        },
-        {
-            title: 'Export Reports',
-            desc: 'PDF & Excel downloads',
-            actionText: 'Export data →',
-            link: '/export',
-            icon: '📥',
-            bgColor: '#14b8a6'
-        },
-        {
-            title: 'Reports',
-            desc: 'View detailed reports',
-            actionText: 'View reports →',
-            link: '/reports',
-            icon: '📈',
-            bgColor: '#f59e0b'
-        },
-        {
-            title: 'Academic Calendar',
-            desc: 'View schedules & events',
-            actionText: 'View calendar →',
-            link: '/calendar',
-            icon: '🗓️',
-            bgColor: '#10b981'
-        }
+    const actions = [
+        { icon: <Users size={22} />, label: 'Student Roster', desc: 'Manage all students', color: '#6366f1', to: '/students' },
+        { icon: <ClipboardList size={22} />, label: 'Assignments', desc: 'Review & grade work', color: '#10b981', to: '/assignments' },
+        { icon: <BarChart3 size={22} />, label: 'Analytics', desc: 'Performance insights', color: '#06b6d4', to: '/analytics' },
+        { icon: <Bell size={22} />, label: 'Notices', desc: 'Post announcements', color: '#f59e0b', to: '/notices' },
     ];
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: 'var(--mc-bg)', fontFamily: "'Inter', sans-serif" }}>
-            {/* Top Navbar */}
-            <nav style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '1rem 2rem', backgroundColor: 'var(--mc-surface)', borderBottom: '1px solid var(--mc-border)'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>🏫</span>
-                    <h1 style={{ color: 'var(--mc-text)', fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>Staff Dashboard</h1>
+        <div className="max-w-5xl mx-auto">
+            {/* Hero Banner */}
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden"
+                style={{ background: 'var(--gradient-hero)' }}
+            >
+                <div className="absolute inset-0" style={{ background: 'var(--gradient-mesh)', opacity: 0.6 }} />
+                <div className="absolute right-8 top-4 opacity-10 hidden sm:block">
+                    <Briefcase size={120} className="text-white" />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    <ThemeToggle />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--mc-text-muted)', fontSize: '0.875rem' }}>
-                        <span style={{ color: '#fbbf24' }}>👋</span> {user?.username || 'staff'}
-                    </div>
-                    <div style={{ position: 'relative', cursor: 'pointer' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mc-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                        <span style={{
-                            position: 'absolute', top: '-6px', right: '-8px', backgroundColor: '#ef4444', color: 'white',
-                            fontSize: '0.65rem', fontWeight: 'bold', padding: '2px 5px', borderRadius: '10px'
-                        }}>9+</span>
-                    </div>
-                    <button onClick={handleLogout} style={{
-                        backgroundColor: '#312e81', color: '#c7d2fe', border: 'none',
-                        padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: '600',
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        transition: 'background-color 0.2s', marginLeft: '0.5rem'
-                    }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3730a3'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#312e81'}
-                    >
-                        Logout
-                    </button>
-                </div>
-            </nav>
-
-            {/* Main Content */}
-            <main style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                    <h2 style={{ fontSize: '2.25rem', fontWeight: '700', color: 'var(--mc-text)', marginBottom: '0.5rem' }}>
-                        Welcome back, {user?.username || 'staff'}! 👋
-                    </h2>
-                    <p style={{ color: 'var(--mc-text-muted)', fontSize: '1.125rem' }}>
-                        Manage your institution from here
+                <div className="relative z-10">
+                    <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.5)' }}>Faculty Portal</span>
+                    <h1 className="text-2xl sm:text-3xl font-black text-white mt-1 mb-1">
+                        {getGreeting()}, {user?.username}!
+                    </h1>
+                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                        You have <strong className="text-white">{students.length} students</strong> in your roster. {notices.length} active notice{notices.length !== 1 ? 's' : ''}.
                     </p>
                 </div>
+            </motion.div>
 
-                <div style={{
-                    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem'
-                }}>
-                    {modules.map((mod, index) => (
-                        <div key={index} onClick={() => navigate(mod.link)} style={{
-                            backgroundColor: 'var(--mc-card)', borderRadius: '1rem', padding: '2rem',
-                            cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
-                            display: 'flex', flexDirection: 'column', height: '180px', position: 'relative',
-                            border: '1px solid var(--mc-border)',
-                        }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.3)';
-                                e.currentTarget.style.backgroundColor = 'var(--mc-card-hover)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.backgroundColor = 'var(--mc-card)';
-                            }}
+            {/* Quick Actions */}
+            <div className="mb-8">
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--text-muted)' }}>Quick Access</h2>
+                <motion.div
+                    initial="hidden"
+                    animate="show"
+                    variants={{ show: { transition: { staggerChildren: 0.08 } } }}
+                    className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+                >
+                    {actions.map((a, i) => (
+                        <motion.button
+                            key={i}
+                            variants={fadeUp}
+                            onClick={() => navigate(a.to)}
+                            className="text-left p-5 rounded-2xl transition-all duration-200 w-full"
+                            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = a.color + '40'; e.currentTarget.style.boxShadow = `0 8px 24px ${a.color}20`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
                         >
-                            <div style={{
-                                width: '48px', height: '48px', borderRadius: '0.75rem',
-                                background: mod.bgColor, display: 'flex', alignItems: 'center',
-                                justifyContent: 'center', fontSize: '1.5rem', position: 'absolute',
-                                top: '1.5rem', left: '1.5rem', boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-                            }}>
-                                {mod.icon}
+                            <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white mb-3"
+                                style={{ background: a.color, boxShadow: `0 4px 12px ${a.color}40` }}>
+                                {a.icon}
                             </div>
+                            <p className="font-bold text-sm mb-0.5" style={{ color: 'var(--text-primary)' }}>{a.label}</p>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{a.desc}</p>
+                        </motion.button>
+                    ))}
+                </motion.div>
+            </div>
 
-                            <div style={{
-                                flex: 1, display: 'flex', flexDirection: 'column',
-                                alignItems: 'center', justifyContent: 'center',
-                                marginTop: '1.5rem'
-                            }}>
-                                <h3 style={{ color: 'var(--mc-text)', fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem', textAlign: 'center' }}>
-                                    {mod.title}
-                                </h3>
-                                <p style={{ color: 'var(--mc-text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-                                    {mod.desc}
-                                </p>
-                                <span style={{ color: '#60a5fa', fontSize: '0.875rem', fontWeight: '500' }}>
-                                    {mod.actionText}
-                                </span>
-                            </div>
+            {/* Stats + Notices */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                {[
+                    { label: 'Total Students', value: students.length, color: '#6366f1', icon: <Users size={18} className="text-white" /> },
+                    { label: 'Active Notices', value: notices.length, color: '#f59e0b', icon: <Bell size={18} className="text-white" /> },
+                    { label: 'Courses', value: '—', color: '#10b981', icon: <BookOpen size={18} className="text-white" /> },
+                ].map((s, i) => (
+                    <motion.div key={i} variants={fadeUp} initial="hidden" animate="show"
+                        className="stat-card flex items-center gap-4">
+                        <div className="icon-chip" style={{ background: s.color, boxShadow: `0 4px 12px ${s.color}40` }}>{s.icon}</div>
+                        <div>
+                            <p className="text-2xl font-black" style={{ color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>{s.value}</p>
+                            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{s.label}</p>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Recent Notices */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="md-card p-6">
+                <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>Recent Notices</h3>
+                    <button onClick={() => navigate('/notices')} className="text-xs font-semibold flex items-center gap-1" style={{ color: 'var(--primary)' }}>
+                        View all <ChevronRight size={14} />
+                    </button>
+                </div>
+                <div className="space-y-3">
+                    {notices.length === 0 ? (
+                        <p className="text-sm text-center py-6" style={{ color: 'var(--text-muted)' }}>No notices posted yet.</p>
+                    ) : notices.map((n, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
+                            style={{ background: 'var(--bg-elevated)' }}
+                            onClick={() => navigate(`/notices/${n.id}`)}>
+                            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--primary)' }} />
+                            <p className="font-medium text-sm flex-1 truncate" style={{ color: 'var(--text-primary)' }}>{n.title}</p>
+                            <ChevronRight size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                         </div>
                     ))}
                 </div>
-            </main>
+            </motion.div>
         </div>
     );
 };

@@ -25,64 +25,65 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+        @Autowired
+        AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
+        @Autowired
+        UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder encoder;
+        @Autowired
+        PasswordEncoder encoder;
 
-    @Autowired
-    JwtUtils jwtUtils;
+        @Autowired
+        JwtUtils jwtUtils;
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        @PostMapping("/signin")
+        public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                Authentication authentication = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                                                loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                List<String> roles = userDetails.getAuthorities().stream()
+                                .map(item -> item.getAuthority())
+                                .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                // Assuming ID is not readily available in standard UserDetails without casting
-                // to custom impl
-                // But we can fetch it or just not send it for now if not needed.
-                // Better yet, let's cast to our custom impl or just fetch by username if
-                // needed.
-                // Standard approach: Cast to custom UserDetails impl if we had one, or just
-                // query user.
-                // For simplicity, let's fetch user again or assume ID 0 for now if strict.
-                // Actually, let's query the repo to be safe and clean.
-                userRepository.findByUsername(userDetails.getUsername()).get().getId(),
-                userDetails.getUsername(),
-                roles));
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+                return ResponseEntity.ok(new JwtResponse(jwt,
+                                // Assuming ID is not readily available in standard UserDetails without casting
+                                // to custom impl
+                                // But we can fetch it or just not send it for now if not needed.
+                                // Better yet, let's cast to our custom impl or just fetch by username if
+                                // needed.
+                                // Standard approach: Cast to custom UserDetails impl if we had one, or just
+                                // query user.
+                                // For simplicity, let's fetch user again or assume ID 0 for now if strict.
+                                // Actually, let's query the repo to be safe and clean.
+                                userRepository.findByUsername(userDetails.getUsername()).get().getId(),
+                                userDetails.getUsername(),
+                                roles));
         }
 
-        // Create new user's account
-        User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setPassword(encoder.encode(signUpRequest.getPassword()));
-        user.setRole(signUpRequest.getRole());
+        @PostMapping("/signup")
+        public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
+                if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+                        return ResponseEntity
+                                        .badRequest()
+                                        .body(new MessageResponse("Error: Username is already taken!"));
+                }
 
-        userRepository.save(user);
+                // Create new user's account
+                User user = new User();
+                user.setUsername(signUpRequest.getUsername());
+                user.setPassword(encoder.encode(signUpRequest.getPassword()));
+                user.setRole(signUpRequest.getRole());
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-    }
+                userRepository.save(user);
+
+                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        }
 }

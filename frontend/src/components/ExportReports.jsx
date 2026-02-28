@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import AuthService from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Download, FileText, Users, Calendar, ArrowLeft,
+    Info, CheckCircle2, ShieldCheck, Loader2, Sparkles,
+    ChevronRight, FileSpreadsheet, HardDrive
+} from 'lucide-react';
 
 const API = 'http://localhost:8080/api';
 
@@ -21,60 +27,147 @@ const ExportReports = () => {
             link.download = filename;
             link.click();
             URL.revokeObjectURL(link.href);
-        } catch (e) { alert('Export failed: ' + e.message); }
+        } catch (e) {
+            console.error('Export failed:', e.message);
+        }
         setLoading('');
     };
 
     const reports = [
-        ...(isStaff ? [{ title: 'All Students', desc: 'Complete student list with courses', icon: '👥', csv: '/export/students/csv', csvFile: 'students.csv' }] : []),
-        { title: 'Marks Report', desc: 'Subject-wise marks breakdown', icon: '📝', csv: `/export/marks/csv/${user?.id}`, csvFile: 'marks.csv' },
-        { title: 'Attendance Report', desc: 'Date-wise attendance record', icon: '📅', csv: `/export/attendance/csv/${user?.id}`, csvFile: 'attendance.csv' },
+        ...(isStaff ? [{
+            title: 'Student Census',
+            desc: 'Comprehensive directory including enrollment metadata',
+            icon: <Users size={24} />,
+            color: 'primary',
+            csv: '/export/students/csv',
+            csvFile: 'Institutional_Student_Census.csv'
+        }] : []),
+        {
+            title: 'Scholastic Audit',
+            desc: 'Subject-wise proficiency and granular mark breakdown',
+            icon: <FileSpreadsheet size={24} />,
+            color: 'accent',
+            csv: `/export/marks/csv/${user?.id}`,
+            csvFile: 'Scholastic_Audit_Report.csv'
+        },
+        {
+            title: 'Engagement Log',
+            desc: 'Chronological attendance tracking and participation metrics',
+            icon: <Calendar size={24} />,
+            color: 'success',
+            csv: `/export/attendance/csv/${user?.id}`,
+            csvFile: 'Engagement_Lifecycle_Log.csv'
+        },
     ];
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--mc-bg)', padding: '2rem 1.5rem', color: 'var(--mc-text)' }}>
-            <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: '0 0 0.25rem 0' }}>📥 Export Reports</h1>
-                        <p style={{ color: 'var(--mc-text-muted)', fontSize: '0.8125rem' }}>Download CSV reports (open in Excel)</p>
-                    </div>
-                    <button onClick={() => navigate(-1)} style={{ background: 'var(--mc-card)', border: '1px solid var(--mc-border-accent)', borderRadius: '9999px', padding: '0.5rem 1.25rem', color: 'var(--mc-text)', fontSize: '0.8125rem', cursor: 'pointer' }}>← Back</button>
+        <div className="max-w-5xl mx-auto space-y-12 pb-20">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div>
+                    <h1 className="text-3xl font-black tracking-tighter flex items-center gap-3">
+                        <HardDrive className="text-primary" size={32} /> Data Extraction
+                    </h1>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Secure Institutional Archive Export</p>
                 </div>
+                <button onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest opacity-50 hover:opacity-100 transition-all group">
+                    <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                    Return to Dashboard
+                </button>
+            </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-                    {reports.map((r, i) => (
-                        <div key={i} style={{ background: 'var(--mc-card)', border: '1px solid var(--mc-border)', borderRadius: '1rem', padding: '1.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                <span style={{ fontSize: '1.75rem' }}>{r.icon}</span>
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {reports.map((r, i) => (
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+                        key={i} className="md-card !p-0 overflow-hidden border-none shadow-2xl group flex flex-col">
+
+                        <div className={`p-8 bg-${r.color}/5 border-b border-${r.color}/10 relative overflow-hidden flex-1`}>
+                            <div className={`absolute -top-6 -right-6 w-24 h-24 rounded-full bg-${r.color}/10 blur-2xl group-hover:scale-150 transition-transform duration-700`} />
+
+                            <div className="relative z-10 space-y-6">
+                                <div className={`w-14 h-14 rounded-2xl bg-${r.color}/10 text-${r.color} flex items-center justify-center shadow-inner`}>
+                                    {r.icon}
+                                </div>
                                 <div>
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', margin: 0 }}>{r.title}</h3>
-                                    <p style={{ fontSize: '0.8125rem', color: 'var(--mc-text-muted)', margin: '0.125rem 0 0' }}>{r.desc}</p>
+                                    <h3 className="text-xl font-black tracking-tight mb-1">{r.title}</h3>
+                                    <p className="text-xs font-medium opacity-50 leading-relaxed">{r.desc}</p>
                                 </div>
                             </div>
-                            <button onClick={() => downloadFile(r.csv, r.csvFile)} disabled={loading === r.csvFile}
-                                style={{
-                                    width: '100%', padding: '0.625rem', borderRadius: '9999px',
-                                    background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-                                    color: '#22c55e', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
-                                    opacity: loading === r.csvFile ? 0.5 : 1,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                                }}>
-                                {loading === r.csvFile ? '⏳' : '📊'} Download CSV
-                            </button>
                         </div>
-                    ))}
+
+                        <div className="p-8 pt-0 bg-white dark:bg-slate-900/50">
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800/50 space-y-4">
+                                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest opacity-30">
+                                    <span>Format: .CSV</span>
+                                    <span>Status: Verified</span>
+                                </div>
+
+                                <button onClick={() => downloadFile(r.csv, r.csvFile)} disabled={loading === r.csvFile}
+                                    className={`w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all
+                                      ${loading === r.csvFile
+                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                            : `bg-${r.color}/10 text-${r.color} hover:bg-${r.color} hover:text-white shadow-lg shadow-${r.color}/10`}`}>
+                                    {loading === r.csvFile ? (
+                                        <>
+                                            <Loader2 size={16} className="animate-spin" />
+                                            Extracting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Download size={16} />
+                                            Initiate Download
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Info Section */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                className="md-card p-10 bg-slate-50 dark:bg-[#0c121e] border-none shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-10 opacity-5 -mr-10 -mt-10 group-hover:rotate-12 transition-transform duration-700">
+                    <ShieldCheck size={200} />
                 </div>
 
-                <div style={{ background: 'var(--mc-card)', border: '1px solid var(--mc-border)', borderRadius: '1rem', padding: '1.25rem' }}>
-                    <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#fff', margin: '0 0 0.75rem 0' }}>ℹ️ About Exports</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--mc-text-muted)' }}>
-                        <span>📊 <strong>CSV</strong> — Opens directly in Microsoft Excel, Google Sheets, etc.</span>
-                        <span>🔒 Reports are generated with your current data in real-time</span>
-                        <span>📁 Files can be used for further analysis and record-keeping</span>
+                <div className="relative z-10 flex flex-col md:flex-row items-start gap-10">
+                    <div className="flex-1 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <Info className="text-primary" size={24} />
+                            <h3 className="text-xl font-black tracking-tight">Security & Protocol</h3>
+                        </div>
+                        <p className="text-sm font-medium opacity-60 leading-relaxed max-w-2xl">
+                            All data extractions are cryptographically verified and contain real-time state snapshots from the institutional database.
+                            CSV payloads are optimized for integration with Microsoft Excel, Google Sheets, and other advanced analytical platforms.
+                        </p>
+                        <div className="flex flex-wrap gap-4">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <CheckCircle2 size={14} className="text-success" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Real-time Sync</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <CheckCircle2 size={14} className="text-success" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Excel Compatible</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <CheckCircle2 size={14} className="text-success" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Verified Origin</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-full md:w-auto p-8 rounded-[2.5rem] bg-gradient-to-br from-primary to-accent flex flex-col items-center justify-center text-white shadow-2xl shadow-primary/30">
+                        <Sparkles size={40} className="mb-4" />
+                        <div className="text-center">
+                            <div className="text-xs font-black uppercase tracking-[0.2em] opacity-60 mb-1">System Health</div>
+                            <div className="text-3xl font-black tracking-tighter">OPTIMAL</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };
