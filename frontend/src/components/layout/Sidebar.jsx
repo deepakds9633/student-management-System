@@ -6,6 +6,7 @@ import {
     UserCheck, Clock, Download
 } from 'lucide-react';
 import AuthService from '../../services/AuthService';
+import AnnouncementService from '../../services/AnnouncementService';
 
 const NavItem = ({ item, onClick }) => (
     <NavLink
@@ -46,11 +47,28 @@ const NavSection = ({ title, items, onClick }) => (
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const [user, setUser] = useState(null);
+    const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        setUser(AuthService.getCurrentUser());
+        const currentUser = AuthService.getCurrentUser();
+        setUser(currentUser);
+
+        if (currentUser) {
+            const fetchCount = async () => {
+                try {
+                    const role = currentUser.roles?.includes('ROLE_ADMIN') ? 'ADMIN' : currentUser.roles?.includes('ROLE_STAFF') ? 'STAFF' : 'STUDENT';
+                    const lastSeen = localStorage.getItem('lastSeenAnnouncement') || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('.')[0];
+                    const res = await AnnouncementService.getCount(lastSeen, role);
+                    setUnreadCount(res.data.count || 0);
+                } catch (e) { /* silent */ }
+            };
+
+            fetchCount();
+            const interval = setInterval(fetchCount, 30000); // 30s poll
+            return () => clearInterval(interval);
+        }
     }, [location]);
 
     if (!user) return null;
@@ -79,7 +97,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     const coreNav = [
         { path: dashboardPath, label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-        { path: '/notices', label: 'Notices', icon: <Bell size={18} /> },
+        { path: '/notices', label: 'Notices', icon: <Bell size={18} />, badge: unreadCount > 0 ? unreadCount : null },
         { path: '/assignments', label: 'Assignments', icon: <ClipboardList size={18} /> },
     ];
 

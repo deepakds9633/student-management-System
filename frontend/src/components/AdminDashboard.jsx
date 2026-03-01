@@ -168,6 +168,36 @@ const AdminDashboard = () => {
             {/* ── OVERVIEW TAB ── */}
             {activeTab === 'overview' && (
                 <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
+
+                    {/* Platform Transformation Highlight */}
+                    <motion.div variants={fadeUp} className="md-card p-6 border-l-4 overflow-hidden relative" style={{ borderColor: 'var(--primary)', background: 'var(--primary-dim)' }}>
+                        <div className="absolute top-0 right-0 p-8 opacity-10 blur-xl">
+                            <Zap size={120} style={{ color: 'var(--primary)' }} />
+                        </div>
+                        <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start">
+                            <div className="p-4 rounded-xl shadow-sm flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
+                                <TrendingUp size={32} className="text-primary" />
+                            </div>
+                            <div className="space-y-4">
+                                <h2 className="text-lg font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>EduVerse Portal Transformation</h2>
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                    The EduVerse Management Portal has been enhanced with a fully redesigned, premium, and adaptive user interface to deliver a modern, enterprise-grade digital experience. The system now features a dynamic light and dark theme architecture that automatically adjusts visual elements such as colors, typography, contrast, and component styling to ensure optimal readability, accessibility, and usability across different devices and environments.
+                                </p>
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                    This adaptive design enables seamless switching between light and dark modes, providing users with personalized control and improved visual comfort. The interface is developed using modern design principles inspired by global technology leaders such as Google and Microsoft, ensuring a clean, responsive, and scalable user experience. All modules including Dashboard, Assignments, Attendance, Marks, Notifications, and Analytics are redesigned with consistent layouts, intuitive navigation, and premium UI components.
+                                </p>
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                    The enhanced theme system ensures that all content, cards, charts, and banners remain clearly visible in both modes, eliminating readability issues and improving overall user engagement. The responsive layout dynamically adjusts to various screen sizes, making the platform suitable for desktop, tablet, and mobile devices.
+                                </p>
+                                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                                    <p className="text-xs font-bold font-mono tracking-widest uppercase" style={{ color: 'var(--primary)' }}>
+                                        Elevating EduVerse into a top-level SaaS product • Ensuring scalability, accessibility & enterprise-grade UX.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
                     {/* KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {kpis.map((kpi, i) => <StatCard key={i} loading={loading} {...kpi} />)}

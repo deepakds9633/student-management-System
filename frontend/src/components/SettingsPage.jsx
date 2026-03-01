@@ -108,6 +108,17 @@ const SettingsPage = () => {
                             <div>
                                 <SectionHeader title="Appearance" desc="Customize how the platform looks and feels." />
                                 <div className="p-6">
+                                    <div className="mb-6 p-5 rounded-xl flex items-start gap-4" style={{ background: 'var(--primary-dim)', border: '1px solid var(--border)' }}>
+                                        <div className="p-2 rounded-lg flex-shrink-0" style={{ background: 'var(--primary)', color: 'white' }}>
+                                            <Palette size={20} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-sm mb-1" style={{ color: 'var(--text-primary)' }}>Adaptive Theming System</h3>
+                                            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                                The UI is enhanced with an adaptive theming system to ensure accessibility and readability across both light and dark modes. Dynamic color contrast management is implemented so that text, icons, and interactive elements automatically adjust based on the active theme. This improves user experience, visual clarity, and accessibility standards. The system ensures that content remains clearly visible in all environments, making the interface more professional, premium, and user-friendly.
+                                            </p>
+                                        </div>
+                                    </div>
                                     <h3 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>Theme</h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                         {[

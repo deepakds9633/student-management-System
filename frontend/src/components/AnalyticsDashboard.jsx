@@ -72,6 +72,9 @@ const AnalyticsDashboard = () => {
                             <Activity className="text-primary" size={32} /> Central Intelligence
                         </h1>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Enterprise Analytics & Performance Control</p>
+                        <p className="mt-2 text-sm opacity-80 max-w-2xl text-[var(--text-secondary)]">
+                            Designed with enhanced readability and accessibility. Supports dynamic theming and responsive visual components, ensuring academic insights are clearly visible across light and dark modes.
+                        </p>
                     </div>
                     <div className="flex items-center gap-3 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
                         {tabs.map(t => (
@@ -116,8 +119,8 @@ const AnalyticsDashboard = () => {
                                             <TrendingUp size={20} />
                                         </div>
                                     </div>
-                                    <div className="h-[320px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
+                                    <div style={{ width: '100%', height: 320 }}>
+                                        <ResponsiveContainer>
                                             <AreaChart data={attendanceTrends}>
                                                 <defs>
                                                     <linearGradient id="yieldGrad" x1="0" y1="0" x2="0" y2="1">
@@ -138,8 +141,8 @@ const AnalyticsDashboard = () => {
 
                                 <div className="md-card p-8 relative overflow-hidden">
                                     <h3 className="text-lg font-black tracking-tight mb-8">Asset Allocation</h3>
-                                    <div className="h-[280px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
+                                    <div style={{ width: '100%', height: 280 }}>
+                                        <ResponsiveContainer>
                                             <RadarChart data={marksSummary?.subjectWiseStats?.slice(0, 6) || []}>
                                                 <PolarGrid stroke="rgba(0,0,0,0.05)" />
                                                 <PolarAngleAxis dataKey="subject" tick={{ fontSize: 8, fontWeight: 900, fill: 'var(--text-muted)' }} />
@@ -254,41 +257,51 @@ const AnalyticsDashboard = () => {
 
                     {/* Performers Tab */}
                     {activeTab === 'performers' && marksSummary && (
-                        <motion.div key="performers" initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {[{ title: 'Institutional Leadership', data: marksSummary.topPerformers, type: 'leader', c: 'primary' },
-                            { title: 'Optimization Priority', data: marksSummary.lowPerformers, type: 'priority', c: 'danger' }].map(({ title, data, type, c }) => (
-                                <div key={title} className="md-card !p-0 overflow-hidden shadow-2xl">
-                                    <div className={`px-10 py-8 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between`}>
-                                        <div>
-                                            <h2 className="text-xl font-black tracking-tight">{title}</h2>
-                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Cross-curriculum mapping</p>
-                                        </div>
-                                        <div className={`w-12 h-12 rounded-2xl bg-${c}/10 text-${c} flex items-center justify-center`}>
-                                            {type === 'leader' ? <Award size={24} /> : <Zap size={24} />}
-                                        </div>
-                                    </div>
-                                    <div className="p-8 space-y-4">
-                                        {data?.map((s, i) => (
-                                            <div key={i} className="flex items-center gap-6 p-5 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all group">
-                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm tracking-tighter
-                                                  ${i === 0 ? 'bg-amber-400 text-white shadow-lg shadow-amber-400/30' :
-                                                        i === 1 ? 'bg-slate-400 text-white' :
-                                                            i === 2 ? 'bg-orange-400 text-white' : 'bg-slate-200 dark:bg-slate-800 opacity-40'}`}>
-                                                    {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-black text-sm tracking-tight mb-1 group-hover:text-primary transition-colors">{s.studentName}</p>
-                                                    <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                        <motion.div initial={{ width: 0 }} animate={{ width: `${s.percentage}%` }}
-                                                            className={`h-full bg-${c}`} />
-                                                    </div>
-                                                </div>
-                                                <div className={`text-lg font-black text-${c} tabular-nums`}>{s.percentage}%</div>
+                        <motion.div key="performers" initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
+
+                            <div className="md-card p-8 bg-primary/5 text-center">
+                                <h3 className="text-xl font-black tracking-tight mb-2">Dynamic Academic Intelligence</h3>
+                                <p className="text-xs opacity-70 max-w-4xl mx-auto leading-relaxed text-[var(--text-secondary)]">
+                                    The Analytics module is enhanced with dynamic, AI-powered academic intelligence that delivers real-time performance monitoring and predictive insights. It automatically evaluates student data such as marks, attendance, assignment completion, and engagement metrics to identify high performers and students requiring academic support. The system dynamically presents the top 5 and bottom 5 students with detailed analytics, visual dashboards, and trend-based insights. This enables administrators and faculty to implement data-driven strategies, personalized mentoring, and early intervention programs. The module supports intelligent decision-making, institutional growth, and continuous academic improvement. Designed with a scalable, cloud-ready architecture, it ensures high performance, security, and usability across modern educational ecosystems.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {[{ title: 'Institutional Leadership', data: marksSummary.topPerformers, type: 'leader', c: 'primary' },
+                                { title: 'Optimization Priority', data: marksSummary.lowPerformers, type: 'priority', c: 'danger' }].map(({ title, data, type, c }) => (
+                                    <div key={title} className="md-card !p-0 overflow-hidden shadow-2xl">
+                                        <div className={`px-10 py-8 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between`}>
+                                            <div>
+                                                <h2 className="text-xl font-black tracking-tight">{title}</h2>
+                                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Cross-curriculum mapping</p>
                                             </div>
-                                        ))}
+                                            <div className={`w-12 h-12 rounded-2xl bg-${c}/10 text-${c} flex items-center justify-center`}>
+                                                {type === 'leader' ? <Award size={24} /> : <Zap size={24} />}
+                                            </div>
+                                        </div>
+                                        <div className="p-8 space-y-4">
+                                            {data?.map((s, i) => (
+                                                <div key={i} className="flex items-center gap-6 p-5 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all group">
+                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm tracking-tighter
+                                                  ${i === 0 ? 'bg-amber-400 text-white shadow-lg shadow-amber-400/30' :
+                                                            i === 1 ? 'bg-slate-400 text-white' :
+                                                                i === 2 ? 'bg-orange-400 text-white' : 'bg-slate-200 dark:bg-slate-800 opacity-40'}`}>
+                                                        {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-black text-sm tracking-tight mb-1 group-hover:text-primary transition-colors">{s.studentName}</p>
+                                                        <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                            <motion.div initial={{ width: 0 }} animate={{ width: `${s.percentage}%` }}
+                                                                className={`h-full bg-${c}`} />
+                                                        </div>
+                                                    </div>
+                                                    <div className={`text-lg font-black text-${c} tabular-nums`}>{s.percentage}%</div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

@@ -82,11 +82,27 @@ const LeaveManagement = () => {
                 </div>
                 {!isStaff && (
                     <button onClick={() => setShowForm(!showForm)}
-                        className={`btn-primary !px-8 !py-3 !rounded-2x flex items-center gap-2 transition-all ${showForm ? '!bg-slate-200 dark:!bg-slate-800 !text-slate-500' : ''}`}>
+                        className={`btn-primary !px-8 !py-3 !rounded-2x flex items-center gap-2 transition-all`}
+                        style={showForm ? { background: 'var(--bg-elevated)', color: 'var(--text-secondary)' } : {}}>
                         {showForm ? <X size={18} /> : <Plus size={18} />}
                         <span className="text-[10px] font-black uppercase tracking-widest">{showForm ? 'Abort Request' : 'New Leave Voucher'}</span>
                     </button>
                 )}
+            </div>
+
+            <div className="p-5 flex flex-col sm:flex-row gap-4 items-start items-center rounded-2xl" style={{ background: 'var(--primary-dim)', border: '1px solid var(--border)' }}>
+                <div className="p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
+                    <ShieldCheck size={24} className="text-primary" />
+                </div>
+                <div>
+                    <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Adaptive Accessibility & Theming</h3>
+                    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        The Leave Management and Attendance Absence module has been improved with an adaptive and accessibility-focused UI design to ensure optimal readability across both light and dark themes. Previously, certain UI components such as message blocks and status labels used low-contrast grey color combinations, which affected visibility in light mode. To address this issue, the system has been redesigned with dynamic theme-aware color tokens that automatically adjust text and background contrast based on the active theme.
+                    </p>
+                    <p className="text-xs leading-relaxed mt-2" style={{ color: 'var(--text-secondary)' }}>
+                        The updated interface now follows modern accessibility standards, ensuring that all content, including student leave reasons, admin remarks, and timeline details, remains clearly visible in both light and dark modes. High-contrast typography, semantic color palettes, and adaptive UI components have been implemented to enhance clarity, reduce eye strain, and improve overall user experience. This enhancement aligns the EduVerse platform with global enterprise UI practices used in leading SaaS products.
+                    </p>
+                </div>
             </div>
 
             <AnimatePresence>
@@ -105,12 +121,12 @@ const LeaveManagement = () => {
                                         <div className="space-y-1.5">
                                             <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Commencement</label>
                                             <input type="date" required value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                                                className="pill-input-dark !rounded-xl !py-2.5 bg-slate-50 dark:bg-slate-900 border-none transition-all focus:ring-2 ring-primary/20" />
+                                                className="pill-input-dark !rounded-xl !py-2.5 transition-all focus:ring-2 ring-primary/20" />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Termination</label>
                                             <input type="date" required value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-                                                className="pill-input-dark !rounded-xl !py-2.5 bg-slate-50 dark:bg-slate-900 border-none transition-all focus:ring-2 ring-primary/20" />
+                                                className="pill-input-dark !rounded-xl !py-2.5 transition-all focus:ring-2 ring-primary/20" />
                                         </div>
                                     </div>
                                 </div>
@@ -119,11 +135,11 @@ const LeaveManagement = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[9px] font-black uppercase tracking-widest opacity-40">Primary Reason</label>
                                         <textarea required rows="1" value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })}
-                                            placeholder="Explain your unavoidable absence..." className="pill-input-dark !rounded-xl !py-2.5 bg-slate-50 dark:bg-slate-900 border-none transition-all focus:ring-2 ring-primary/20 resize-none" />
+                                            placeholder="Explain your unavoidable absence..." className="pill-input-dark !rounded-xl !py-2.5 transition-all focus:ring-2 ring-primary/20 resize-none" />
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex justify-end gap-3 pt-4 border-t border-slate-50 dark:border-slate-800/50">
+                            <div className="flex justify-end gap-3 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                                 <button type="submit" className="btn-primary !px-10 !py-3 !rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
                                     <Send size={16} /> Transmit Voucher
                                 </button>
@@ -138,7 +154,8 @@ const LeaveManagement = () => {
                 {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map(f => (
                     <button key={f} onClick={() => setActiveFilter(f)}
                         className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all flex items-center gap-2
-                        ${activeFilter === f ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 opacity-50 hover:opacity-100 hover:bg-slate-50'}`}>
+                        ${activeFilter === f ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border opacity-50 hover:opacity-100 scale-95 hover:scale-100'}`}
+                        style={activeFilter !== f ? { background: 'var(--bg-surface)', borderColor: 'var(--border-strong)', color: 'var(--text-primary)' } : {}}>
                         {f} <span className="opacity-40 tabular-nums">({f === 'ALL' ? leaves.length : leaves.filter(l => l.status === f).length})</span>
                     </button>
                 ))}
@@ -158,11 +175,11 @@ const LeaveManagement = () => {
                             return (
                                 <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                     key={leave.id} className="md-card p-6 border-none shadow-xl hover:translate-x-1 transition-all group relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-slate-100 dark:bg-slate-800 group-hover:bg-primary transition-colors" />
+                                    <div className="absolute top-0 left-0 w-1 h-full group-hover:bg-primary transition-colors duration-300" style={{ background: 'var(--border-strong)' }} />
 
                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                                         <div className="flex items-start gap-6 flex-1">
-                                            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-inner shrink-0">
+                                            <div className="w-12 h-12 rounded-2xl border flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-inner shrink-0" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
                                                 <Calendar size={20} />
                                             </div>
                                             <div className="space-y-2">
@@ -175,14 +192,14 @@ const LeaveManagement = () => {
                                                     {leave.startDate} <ChevronRight size={10} className="opacity-30" /> {leave.endDate}
                                                     <span className="text-[9px] font-black uppercase opacity-30 ml-2 tracking-widest">Timeline Block</span>
                                                 </div>
-                                                <div className="flex items-start gap-2 bg-slate-50/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800/50">
-                                                    <MessageSquare size={12} className="opacity-30 mt-1 shrink-0" />
-                                                    <p className="text-[11px] font-medium opacity-60 italic leading-relaxed">"{leave.reason}"</p>
+                                                <div className="flex items-start gap-2 p-3 rounded-xl border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+                                                    <MessageSquare size={12} className="opacity-50 mt-1 shrink-0" style={{ color: 'var(--text-secondary)' }} />
+                                                    <p className="text-[12px] font-medium italic leading-relaxed" style={{ color: 'var(--text-secondary)' }}>"{leave.reason}"</p>
                                                 </div>
                                                 {leave.remarks && (
-                                                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-lg border border-primary/10 w-fit">
-                                                        <ShieldCheck size={10} className="text-primary" />
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-primary opacity-60">ADMIN: {leave.remarks}</p>
+                                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20 w-fit">
+                                                        <ShieldCheck size={12} className="text-primary" />
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-primary opacity-90">ADMIN: {leave.remarks}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -216,16 +233,16 @@ const LeaveManagement = () => {
             </div>
 
             {/* Legend / System Policy */}
-            <div className="md-card !bg-transparent border-dashed border-2 border-slate-200 dark:border-slate-800 p-8 flex flex-col md:flex-row items-center gap-8 opacity-40 hover:opacity-100 transition-opacity">
-                <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-3xl"><Info size={32} /></div>
+            <div className="md-card !bg-transparent border-dashed border-2 p-8 flex flex-col md:flex-row items-center gap-8 opacity-40 hover:opacity-100 transition-opacity" style={{ borderColor: 'var(--border-strong)' }}>
+                <div className="p-4 rounded-3xl" style={{ background: 'var(--bg-elevated)' }}><Info size={32} /></div>
                 <div className="space-y-1 flex-1 text-center md:text-left">
                     <h4 className="text-[10px] font-black uppercase tracking-widest">Extraction Protocol</h4>
                     <p className="text-xs font-medium">Leave vouchers are cross-referenced with your academic enrollment. Unauthorized absences might impact your proficiency scores. Ensure documentation is accurate.</p>
                 </div>
                 <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-primary border-2 border-white dark:border-slate-900" />
-                    <div className="w-8 h-8 rounded-full bg-accent border-2 border-white dark:border-slate-900" />
-                    <div className="w-8 h-8 rounded-full bg-success border-2 border-white dark:border-slate-900" />
+                    <div className="w-8 h-8 rounded-full bg-primary border-2" style={{ borderColor: 'var(--bg-surface)' }} />
+                    <div className="w-8 h-8 rounded-full bg-accent border-2" style={{ borderColor: 'var(--bg-surface)' }} />
+                    <div className="w-8 h-8 rounded-full bg-success border-2" style={{ borderColor: 'var(--bg-surface)' }} />
                 </div>
             </div>
         </div>

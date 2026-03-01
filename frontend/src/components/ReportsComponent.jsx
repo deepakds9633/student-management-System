@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AnalyticsService from '../services/AnalyticsService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area } from 'recharts';
-import { Download, TrendingUp, Users, Award, BookOpen, FileText, ChevronRight, Search, Filter } from 'lucide-react';
+import { Download, TrendingUp, Users, Award, BookOpen, FileText, ChevronRight, Search, Filter, AlertCircle, BarChart2 } from 'lucide-react';
 
 const ReportsComponent = () => {
     const [attendanceData, setAttendanceData] = useState([]);
@@ -61,7 +61,10 @@ const ReportsComponent = () => {
                     <h1 className="flex items-center gap-3 tracking-tighter">
                         <TrendingUp size={28} className="text-primary" /> Reports & Insights
                     </h1>
-                    <p className="text-xs font-bold opacity-40 uppercase tracking-[0.2em] mt-1">Institutional Performance Intelligence</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Institutional Performance Intelligence</p>
+                    <p className="mt-2 text-sm opacity-80 max-w-2xl text-[var(--text-secondary)]">
+                        Designed with modern UI standards. High-contrast typography and comprehensive analytics ensure that critical academic insights and metrics are easily accessible.
+                    </p>
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
                     <button className="flex-1 sm:flex-none px-6 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
@@ -138,8 +141,8 @@ const ReportsComponent = () => {
                             <div className="text-[9px] font-black uppercase opacity-30">Weighted Average</div>
                         </div>
                     </div>
-                    <div className="h-[280px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div style={{ width: '100%', height: 280 }}>
+                        <ResponsiveContainer>
                             <AreaChart data={attendanceData}>
                                 <defs>
                                     <linearGradient id="attGradient" x1="0" y1="0" x2="0" y2="1">
@@ -169,8 +172,8 @@ const ReportsComponent = () => {
                             <BarChart2 size={18} className="text-accent" />
                         </div>
                     </div>
-                    <div className="h-[280px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div style={{ width: '100%', height: 280 }}>
+                        <ResponsiveContainer>
                             <BarChart data={marksData}>
                                 <XAxis dataKey="subject" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: 'var(--text-muted)', fontWeight: 700 }} dy={10} />
                                 <YAxis hide domain={[0, 100]} />

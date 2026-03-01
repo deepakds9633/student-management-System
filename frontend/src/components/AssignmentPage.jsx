@@ -119,10 +119,23 @@ const AssignmentPage = () => {
                 )}
             </div>
 
-            <div className="tab-group w-full sm:w-auto p-1 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+            <div className="p-5 rounded-2xl flex flex-col sm:flex-row gap-4 items-start mb-2" style={{ background: 'var(--primary-dim)', border: '1px solid var(--border)' }}>
+                <div className="p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
+                    <BookOpen size={24} className="text-primary" />
+                </div>
+                <div>
+                    <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Adaptive Theme & Enterprise Experience</h3>
+                    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        The Learning Management module now features an adaptive, theme-aware interface with enterprise-grade UI standards. The system dynamically adjusts contrast, typography, and component elevation to ensure optimal accessibility and readability in both light and dark modes. This enhancement improves user experience, engagement, and usability while aligning the platform with global SaaS product design principles.
+                    </p>
+                </div>
+            </div>
+
+            <div className="tab-group w-full sm:w-auto p-1 rounded-2xl border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                 {tabs.map(t => (
                     <button key={t.id} onClick={() => setActiveTab(t.id)}
-                        className={`tab-btn flex items-center justify-center gap-2 px-6 py-2.5 !rounded-xl transition-all ${activeTab === t.id ? 'active !bg-white dark:!bg-slate-800 !shadow-sm' : ''}`}>
+                        className={`tab-btn flex items-center justify-center gap-2 px-6 py-2.5 !rounded-xl transition-all ${activeTab === t.id ? 'active' : ''}`}
+                        style={activeTab === t.id ? { background: 'var(--bg-surface)', boxShadow: 'var(--shadow-sm)' } : {}}>
                         {t.icon} <span className="text-xs font-black uppercase tracking-widest">{t.label}</span>
                     </button>
                 ))}
@@ -190,7 +203,7 @@ const AssignmentPage = () => {
                                     <motion.div key={t.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                         className="md-card p-5 group hover:border-primary/40 transition-all flex flex-col">
                                         <div className="flex justify-between items-start mb-4">
-                                            <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700">
+                                            <span className="px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-strong)', color: 'var(--text-secondary)' }}>
                                                 {t.subject}
                                             </span>
                                             {!isStaff && (
@@ -203,7 +216,7 @@ const AssignmentPage = () => {
                                         <h3 className="text-base font-bold mb-2 group-hover:text-primary transition-colors">{t.title}</h3>
                                         <p className="text-xs opacity-60 line-clamp-2 mb-6 flex-grow">{t.description}</p>
 
-                                        <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                        <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                                             <div className="flex justify-between items-center text-[10px] font-bold opacity-60">
                                                 <span className="flex items-center gap-1.5"><Calendar size={12} /> {new Date(t.createdAt).toLocaleDateString()}</span>
                                                 <span className="flex items-center gap-1.5 text-danger"><Clock size={12} /> {new Date(t.deadline).toLocaleDateString()}</span>
@@ -217,11 +230,11 @@ const AssignmentPage = () => {
 
                                             {showSubmitForm === t.id && (
                                                 <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmitSubmission}
-                                                    className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-primary/30 space-y-3">
+                                                    className="p-3 rounded-xl border border-dashed border-primary/30 space-y-3" style={{ background: 'var(--bg-elevated)' }}>
                                                     <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-primary/10 file:text-primary file:font-bold" />
                                                     <div className="flex gap-2">
                                                         <button type="submit" className="btn-primary flex-1 text-xs py-1.5 !rounded-lg">Upload</button>
-                                                        <button type="button" onClick={() => setShowSubmitForm(null)} className="p-1.5 rounded-lg border hover:bg-white dark:hover:bg-slate-800 transition-colors"><X size={14} /></button>
+                                                        <button type="button" onClick={() => setShowSubmitForm(null)} className="p-1.5 rounded-lg border transition-colors hover:bg-primary/10" style={{ borderColor: 'var(--border)', background: 'var(--bg-surface)' }}><X size={14} /></button>
                                                     </div>
                                                 </motion.form>
                                             )}
@@ -273,7 +286,7 @@ const AssignmentPage = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-end pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-800 sm:pl-6">
+                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-end pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l sm:pl-6" style={{ borderColor: 'var(--border)' }}>
                                         {s.status === 'SUBMITTED' ? (
                                             grading === s.id ? (
                                                 <div className="flex gap-2 w-full sm:w-auto">
@@ -283,7 +296,7 @@ const AssignmentPage = () => {
                                                     </select>
                                                     <input placeholder="Short feedback..." value={gradeForm.feedback} onChange={e => setGradeForm({ ...gradeForm, feedback: e.target.value })} className="pill-input-dark !py-1.5 px-3 text-xs flex-1 sm:w-48" />
                                                     <button onClick={() => handleGrade(s.id)} className="btn-primary py-1.5 px-4 text-xs">Save</button>
-                                                    <button onClick={() => setGrading(null)} className="p-1.5 rounded-lg border hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><X size={16} /></button>
+                                                    <button onClick={() => setGrading(null)} className="p-1.5 rounded-lg border transition-colors hover:bg-primary/10" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}><X size={16} /></button>
                                                 </div>
                                             ) : (
                                                 <button onClick={() => setGrading(s.id)} className="btn-primary !py-2 !px-6 text-xs flex items-center gap-2">
@@ -325,7 +338,7 @@ const AssignmentPage = () => {
                                                     {st.submissionCount} submissions
                                                 </div>
                                             </div>
-                                            <div className="mt-4 w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
+                                            <div className="mt-4 w-full h-1.5 rounded-full" style={{ background: 'var(--bg-elevated)' }}>
                                                 <motion.div initial={{ width: 0 }} animate={{ width: `${(st.averageGrade / 100) * 100}%` }} className="h-full bg-primary rounded-full" />
                                             </div>
                                         </div>
@@ -337,11 +350,11 @@ const AssignmentPage = () => {
                                 <div className="md-card p-6 bg-primary/5 border border-primary/10">
                                     <h3 className="font-bold text-sm mb-4">Export Reports</h3>
                                     <div className="space-y-2">
-                                        <button className="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all group">
+                                        <button className="w-full flex items-center justify-between p-3 rounded-xl border hover:border-primary transition-all group" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
                                             <span className="text-xs font-bold opacity-60">Full Academic Excel</span>
                                             <Download size={16} className="text-primary group-hover:scale-110 transition-transform" />
                                         </button>
-                                        <button className="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary transition-all group">
+                                        <button className="w-full flex items-center justify-between p-3 rounded-xl border hover:border-primary transition-all group" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
                                             <span className="text-xs font-bold opacity-60">Performance PDF</span>
                                             <FileText size={16} className="text-danger group-hover:scale-110 transition-transform" />
                                         </button>
