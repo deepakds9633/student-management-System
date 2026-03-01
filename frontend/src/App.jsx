@@ -14,7 +14,7 @@ const LoginComponent = lazy(() => import('./components/LoginComponent'));
 const AttendanceComponent = lazy(() => import('./components/AttendanceComponent'));
 const MarkComponent = lazy(() => import('./components/MarkComponent'));
 const ReportsComponent = lazy(() => import('./components/ReportsComponent'));
-const AnalyticsDashboard = lazy(() => import('./components/AnalyticsDashboard'));
+const UserManagementSystem = lazy(() => import('./components/UserManagementSystem'));
 const LeaveManagement = lazy(() => import('./components/LeaveManagement'));
 const NoticeBoard = lazy(() => import('./components/NoticeBoard'));
 const NoticeDetail = lazy(() => import('./components/NoticeDetail'));
@@ -47,7 +47,7 @@ function App() {
               <Route path='/attendance' element={<AttendanceComponent />} />
               <Route path='/marks' element={<MarkComponent />} />
               <Route path='/reports' element={<ReportsComponent />} />
-              <Route path='/analytics' element={<AnalyticsDashboard />} />
+              <Route path='/user-management' element={<UserManagementSystem />} />
               <Route path='/leaves' element={<LeaveManagement />} />
               <Route path='/notices' element={<NoticeBoard />} />
               <Route path='/notices/:id' element={<NoticeDetail />} />

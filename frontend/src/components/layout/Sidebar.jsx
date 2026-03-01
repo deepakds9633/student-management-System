@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, Users, Calendar, ClipboardList, BarChart3,
     Bell, Settings, LogOut, X, GraduationCap, FileText, BookOpen,
-    UserCheck, Clock, Download
+    UserCheck, Clock, Download, UserCog
 } from 'lucide-react';
 import AuthService from '../../services/AuthService';
 import AnnouncementService from '../../services/AnnouncementService';
@@ -110,14 +110,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     if (isStaff) {
         academicNav.push({ path: '/students', label: 'Students', icon: <Users size={18} /> });
-        academicNav.push({ path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> });
+        academicNav.push({ path: '/user-management', label: 'User Management', icon: <UserCog size={18} /> });
     }
 
     const adminNav = [];
     if (isAdmin) {
         adminNav.push({ path: '/students', label: 'Students', icon: <Users size={18} /> });
         adminNav.push({ path: '/calendar', label: 'Calendar', icon: <Calendar size={18} /> });
-        adminNav.push({ path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> });
+        adminNav.push({ path: '/user-management', label: 'User Management', icon: <UserCog size={18} /> });
         adminNav.push({ path: '/reports', label: 'Reports', icon: <FileText size={18} /> });
         adminNav.push({ path: '/export', label: 'Export Data', icon: <Download size={18} /> });
     }
