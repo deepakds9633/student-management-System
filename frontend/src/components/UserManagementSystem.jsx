@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Users, UserCog, ShieldCheck, UserPlus,
     Search, Trash2, Edit3, X, CheckCircle,
-    AlertCircle, ChevronRight
+    AlertCircle, ChevronRight, UserCheck
 } from 'lucide-react';
 
 const UserManagementSystem = () => {
@@ -20,6 +20,7 @@ const UserManagementSystem = () => {
     const [toast, setToast] = useState(null);
 
     const currentUser = AuthService.getCurrentUser();
+    const isAdmin = currentUser?.roles?.includes('ROLE_ADMIN');
     const headers = { Authorization: `Bearer ${currentUser?.token}` };
 
     useEffect(() => {
@@ -27,6 +28,10 @@ const UserManagementSystem = () => {
     }, []);
 
     const fetchData = async () => {
+        if (!isAdmin) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             const [usersRes, statsRes] = await Promise.all([
@@ -37,7 +42,11 @@ const UserManagementSystem = () => {
             setStats(statsRes.data);
         } catch (err) {
             console.error('Error fetching user data:', err);
-            showToast('Failed to load system data', 'error');
+            if (err.response?.status === 401) {
+                showToast('Session expired or unauthorized. Please log in again.', 'error');
+            } else {
+                showToast('Failed to load system data', 'error');
+            }
         }
         setLoading(false);
     };
@@ -95,6 +104,18 @@ const UserManagementSystem = () => {
             </div>
         </div>
     );
+
+    if (!isAdmin) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center" style={{ background: 'var(--bg-surface)' }}>
+                <div className="w-16 h-16 rounded-3xl bg-danger/10 text-danger flex items-center justify-center mb-4 border border-danger/20">
+                    <ShieldCheck size={32} />
+                </div>
+                <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Access Denied</h2>
+                <p className="text-xs opacity-50 mt-1 max-w-sm" style={{ color: 'var(--text-muted)' }}>You do not have the required administrative privileges to view or modify the global directory.</p>
+            </div>
+        );
+    }
 
     const statCards = stats ? [
         { label: 'Total Infrastructure Population', value: stats.totalUsers, icon: <Users size={18} />, color: 'primary' },

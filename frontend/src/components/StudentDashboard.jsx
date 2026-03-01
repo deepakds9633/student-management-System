@@ -68,7 +68,7 @@ const StudentDashboard = () => {
             setIsRefreshing(true);
             try {
                 const [nRes, aRes, mRes, attRes] = await Promise.all([
-                    axios.get(`${API}/notices`, { headers }).catch(() => ({ data: [] })),
+                    axios.get(`${API}/notifications`, { headers }).catch(() => ({ data: [] })),
                     axios.get(`${API}/assignments/student/${user.username}`, { headers }).catch(() => ({ data: [] })),
                     axios.get(`${API}/marks/student/me`, { headers }).catch(() => ({ data: [] })),
                     axios.get(`${API}/attendance/student/me`, { headers }).catch(() => ({ data: [] })),

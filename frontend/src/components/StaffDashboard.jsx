@@ -21,7 +21,7 @@ const StaffDashboard = () => {
             try {
                 const [sRes, nRes] = await Promise.all([
                     axios.get(`${API}/students`, { headers }).catch(() => ({ data: [] })),
-                    axios.get(`${API}/notices`, { headers }).catch(() => ({ data: [] })),
+                    axios.get(`${API}/notifications`, { headers }).catch(() => ({ data: [] })),
                 ]);
                 setStudents(sRes.data);
                 setNotices(nRes.data.slice(0, 4));

@@ -41,12 +41,15 @@ public class MarkController {
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('STUDENT')")
     public List<Mark> getMarksByStudent(@PathVariable("studentId") String studentId, Principal principal) {
-        boolean isStaff = userRepository.findByUsername(principal.getName())
-                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+        boolean hasPrivilege = userRepository.findByUsername(principal.getName())
+                .map(u -> {
+                    String roleName = u.getRole().name();
+                    return roleName.equals("ADMIN") || roleName.equals("STAFF");
+                }).orElse(false);
 
-        if (!isStaff || studentId.equals("me")) {
+        if (!hasPrivilege || studentId.equals("me")) {
             Student student = getStudentFromPrincipal(principal);
             if (student == null)
                 return List.of();
@@ -61,13 +64,16 @@ public class MarkController {
     }
 
     @GetMapping("/student/{studentId}/type/{type}")
-    @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('STUDENT')")
     public List<Mark> getMarksByStudentAndType(@PathVariable("studentId") String studentId,
             @PathVariable("type") String type, Principal principal) {
-        boolean isStaff = userRepository.findByUsername(principal.getName())
-                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+        boolean hasPrivilege = userRepository.findByUsername(principal.getName())
+                .map(u -> {
+                    String roleName = u.getRole().name();
+                    return roleName.equals("ADMIN") || roleName.equals("STAFF");
+                }).orElse(false);
 
-        if (!isStaff || studentId.equals("me")) {
+        if (!hasPrivilege || studentId.equals("me")) {
             Student student = getStudentFromPrincipal(principal);
             if (student == null)
                 return List.of();
