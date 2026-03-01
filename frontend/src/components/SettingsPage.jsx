@@ -1,14 +1,62 @@
-import React, { useState, useContext } from 'react';
-import { motion } from 'framer-motion';
-import { User, Bell, Shield, Palette, Smartphone, Sun, Moon, CheckCircle } from 'lucide-react';
+import React, { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Bell, Shield, Palette, Smartphone, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import AuthService from '../services/AuthService';
 import { ThemeContext } from '../contexts/ThemeContext';
+import ProfileAvatarUploader from './ProfileAvatarUploader';
 
 const SettingsPage = () => {
     const [activeTab, setActiveTab] = useState('profile');
+    const [avatarKey, setAvatarKey] = useState(Date.now());
     const user = AuthService.getCurrentUser();
     const { theme, toggleTheme } = useContext(ThemeContext);
     const isDark = theme === 'dark';
+
+    const [username, setUsername] = useState(user?.username || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState('');
+    const [saveError, setSaveError] = useState('');
+
+    const handleProfileUpdate = async () => {
+        setIsSaving(true);
+        setSaveError('');
+        setSaveSuccess('');
+
+        try {
+            const res = await axios.put('http://localhost:8080/api/profile', {
+                username,
+                email
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            });
+
+            // Update local storage with new token and details
+            const updatedUser = {
+                ...user,
+                token: res.data.token,
+                username: res.data.username,
+                email: res.data.email
+            };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
+            setSaveSuccess('Profile details updated successfully!');
+            setTimeout(() => {
+                setSaveSuccess('');
+                if (res.data.username !== user.username) {
+                    window.location.reload();
+                }
+            }, 1000);
+
+        } catch (err) {
+            setSaveError(err.response?.data?.message || 'Failed to update profile');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const tabs = [
         { id: 'profile', label: 'My Profile', icon: <User size={16} /> },
@@ -70,34 +118,62 @@ const SettingsPage = () => {
                                 <SectionHeader title="Public Profile" desc="This info is visible to staff and administrators." />
                                 <div className="p-6 space-y-6">
                                     {/* Avatar */}
-                                    <div className="flex items-center gap-5 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl text-white flex-shrink-0"
-                                            style={{ background: roleGradient, boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
-                                            {user?.username?.[0]?.toUpperCase() || 'U'}
-                                        </div>
-                                        <div>
-                                            <button className="btn-secondary text-xs px-3 py-1.5">Change Avatar</button>
-                                            <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>JPG, GIF or PNG. Max 1MB.</p>
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 pb-6 justify-center sm:justify-start" style={{ borderBottom: '1px solid var(--border)' }}>
+                                        <ProfileAvatarUploader
+                                            currentAvatarUrl={`http://localhost:8080/api/profile/avatar/${user?.username}?v=${avatarKey}`}
+                                            onUploadSuccess={() => setAvatarKey(Date.now())}
+                                        />
+                                        <div className="text-center sm:text-left pt-2">
+                                            <h3 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>Profile Picture</h3>
+                                            <p className="text-xs mt-1.5 max-w-xs" style={{ color: 'var(--text-muted)' }}>We support custom avatars for all users. Please upload a JPG, GIF or PNG. Max size is 5MB.</p>
                                         </div>
                                     </div>
                                     {/* Fields */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        {[
-                                            { label: 'Username', value: user?.username || '', type: 'text' },
-                                            { label: 'Email Address', value: user?.email || 'student@university.edu', type: 'email' },
-                                            { label: 'Role', value: user?.roles?.[0] || 'ROLE_STUDENT', type: 'text', disabled: true },
-                                            { label: 'User ID', value: user?.id || '—', type: 'text', disabled: true },
-                                        ].map(f => (
-                                            <div key={f.label}>
-                                                <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>{f.label}</label>
-                                                <input type={f.type} defaultValue={f.value} disabled={f.disabled}
-                                                    className="pill-input-dark"
-                                                    style={f.disabled ? { opacity: 0.5, cursor: 'not-allowed' } : {}} />
-                                            </div>
-                                        ))}
+                                        <div>
+                                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>Username</label>
+                                            <input type="text" value={username} onChange={e => setUsername(e.target.value)}
+                                                className="pill-input-dark" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>Email Address</label>
+                                            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                                                className="pill-input-dark" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>Role</label>
+                                            <input type="text" value={user?.roles?.[0] || 'ROLE_STUDENT'} disabled
+                                                className="pill-input-dark" style={{ opacity: 0.5, cursor: 'not-allowed' }} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>User ID</label>
+                                            <input type="text" value={user?.id || '—'} disabled
+                                                className="pill-input-dark" style={{ opacity: 0.5, cursor: 'not-allowed' }} />
+                                        </div>
                                     </div>
+
+                                    <AnimatePresence>
+                                        {saveError && (
+                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-[10px] font-bold text-danger bg-danger/10 px-4 py-2 rounded-lg border border-danger/20">
+                                                <AlertCircle size={14} /> {saveError}
+                                            </motion.div>
+                                        )}
+                                        {saveSuccess && (
+                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-[10px] font-bold text-success bg-success/10 px-4 py-2 rounded-lg border border-success/20">
+                                                <CheckCircle size={14} /> {saveSuccess}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
                                     <div className="flex justify-end pt-2">
-                                        <button className="btn-primary">Save Changes</button>
+                                        <button
+                                            onClick={handleProfileUpdate}
+                                            disabled={isSaving}
+                                            className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                                        >
+                                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : null}
+                                            {isSaving ? 'Saving...' : 'Save Changes'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

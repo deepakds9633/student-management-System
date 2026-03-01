@@ -67,7 +67,8 @@ const ReportsComponent = () => {
                     </p>
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
-                    <button className="flex-1 sm:flex-none px-6 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
+                    <button className="flex-1 sm:flex-none px-6 py-2.5 border rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:opacity-80"
+                        style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}>
                         <Filter size={14} /> Global Filters
                     </button>
                     <button className="flex-1 sm:flex-none btn-primary !px-8 !py-2.5 !rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
@@ -142,7 +143,7 @@ const ReportsComponent = () => {
                         </div>
                     </div>
                     <div style={{ width: '100%', height: 280 }}>
-                        <ResponsiveContainer>
+                        <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={attendanceData}>
                                 <defs>
                                     <linearGradient id="attGradient" x1="0" y1="0" x2="0" y2="1">
@@ -173,7 +174,7 @@ const ReportsComponent = () => {
                         </div>
                     </div>
                     <div style={{ width: '100%', height: 280 }}>
-                        <ResponsiveContainer>
+                        <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={marksData}>
                                 <XAxis dataKey="subject" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: 'var(--text-muted)', fontWeight: 700 }} dy={10} />
                                 <YAxis hide domain={[0, 100]} />

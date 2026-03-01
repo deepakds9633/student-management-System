@@ -53,18 +53,11 @@ public class AuthController {
                                 .map(item -> item.getAuthority())
                                 .collect(Collectors.toList());
 
+                User user = userRepository.findByUsername(userDetails.getUsername()).get();
                 return ResponseEntity.ok(new JwtResponse(jwt,
-                                // Assuming ID is not readily available in standard UserDetails without casting
-                                // to custom impl
-                                // But we can fetch it or just not send it for now if not needed.
-                                // Better yet, let's cast to our custom impl or just fetch by username if
-                                // needed.
-                                // Standard approach: Cast to custom UserDetails impl if we had one, or just
-                                // query user.
-                                // For simplicity, let's fetch user again or assume ID 0 for now if strict.
-                                // Actually, let's query the repo to be safe and clean.
-                                userRepository.findByUsername(userDetails.getUsername()).get().getId(),
-                                userDetails.getUsername(),
+                                user.getId(),
+                                user.getUsername(),
+                                user.getEmail(),
                                 roles));
         }
 

@@ -33,6 +33,7 @@ const getBreadcrumb = (pathname) => {
 const MainLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [avatarError, setAvatarError] = useState(false);
     const location = useLocation();
     const user = AuthService.getCurrentUser();
 
@@ -129,18 +130,27 @@ const MainLayout = ({ children }) => {
                                 className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl cursor-default transition-all ml-1"
                                 style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
                             >
-                                <div
-                                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                                    style={{
-                                        background: isAdmin
-                                            ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
-                                            : isStaff
-                                                ? 'linear-gradient(135deg,#10b981,#059669)'
-                                                : 'linear-gradient(135deg,#6366f1,#a855f7)'
-                                    }}
-                                >
-                                    {user.username?.[0]?.toUpperCase() || 'U'}
-                                </div>
+                                {!avatarError ? (
+                                    <img
+                                        src={`http://localhost:8080/api/profile/avatar/${user.username}`}
+                                        alt="Profile"
+                                        className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                                        onError={() => setAvatarError(true)}
+                                    />
+                                ) : (
+                                    <div
+                                        className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                                        style={{
+                                            background: isAdmin
+                                                ? 'linear-gradient(135deg,#f59e0b,#ef4444)'
+                                                : isStaff
+                                                    ? 'linear-gradient(135deg,#10b981,#059669)'
+                                                    : 'linear-gradient(135deg,#6366f1,#a855f7)'
+                                        }}
+                                    >
+                                        {user.username?.[0]?.toUpperCase() || 'U'}
+                                    </div>
+                                )}
                                 <span className="text-xs font-semibold hidden sm:block" style={{ color: 'var(--text-primary)', maxWidth: 72, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {user.username}
                                 </span>

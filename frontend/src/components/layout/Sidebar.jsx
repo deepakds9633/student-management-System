@@ -48,6 +48,7 @@ const NavSection = ({ title, items, onClick }) => (
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const [user, setUser] = useState(null);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [avatarError, setAvatarError] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -215,12 +216,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                         className="flex items-center gap-3 p-2.5 rounded-xl"
                         style={{ background: 'var(--bg-elevated)' }}
                     >
-                        <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
-                            style={{ background: getRoleGradient(), boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-                        >
-                            {user.username?.[0]?.toUpperCase() || 'U'}
-                        </div>
+                        {!avatarError ? (
+                            <img
+                                src={`http://localhost:8080/api/profile/avatar/${user.username}`}
+                                alt="Profile"
+                                className="w-9 h-9 rounded-full object-cover shadow-md flex-shrink-0"
+                                onError={() => setAvatarError(true)}
+                            />
+                        ) : (
+                            <div
+                                className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
+                                style={{ background: getRoleGradient(), boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+                            >
+                                {user.username?.[0]?.toUpperCase() || 'U'}
+                            </div>
+                        )}
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.username}</p>
                             <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{getRoleName()}</p>
