@@ -112,11 +112,13 @@ public class AnalyticsController {
             Map<String, Object> map = new HashMap<>();
             map.put("studentName", obj[0]);
             map.put("course", obj[1]);
-            Double avg = (Double) obj[2];
-            Double maxAvg = (Double) obj[3]; // Fetch max marks
 
-            double max = maxAvg != null && maxAvg > 0 ? maxAvg : 100;
-            map.put("percentage", Math.round((avg / max) * 100));
+            // Handle Number conversion safely for SUM aggregations
+            double marksObtained = obj[2] != null ? ((Number) obj[2]).doubleValue() : 0.0;
+            double maxMarks = obj[3] != null ? ((Number) obj[3]).doubleValue() : 0.0;
+
+            double max = maxMarks > 0 ? maxMarks : 100.0;
+            map.put("percentage", Math.round((marksObtained / max) * 100));
             return map;
         }).toList();
     }

@@ -90,20 +90,6 @@ const LeaveManagement = () => {
                 )}
             </div>
 
-            <div className="p-5 flex flex-col sm:flex-row gap-4 items-start items-center rounded-2xl" style={{ background: 'var(--primary-dim)', border: '1px solid var(--border)' }}>
-                <div className="p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
-                    <ShieldCheck size={24} className="text-primary" />
-                </div>
-                <div>
-                    <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Adaptive Accessibility & Theming</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                        The Leave Management and Attendance Absence module has been improved with an adaptive and accessibility-focused UI design to ensure optimal readability across both light and dark themes. Previously, certain UI components such as message blocks and status labels used low-contrast grey color combinations, which affected visibility in light mode. To address this issue, the system has been redesigned with dynamic theme-aware color tokens that automatically adjust text and background contrast based on the active theme.
-                    </p>
-                    <p className="text-xs leading-relaxed mt-2" style={{ color: 'var(--text-secondary)' }}>
-                        The updated interface now follows modern accessibility standards, ensuring that all content, including student leave reasons, admin remarks, and timeline details, remains clearly visible in both light and dark modes. High-contrast typography, semantic color palettes, and adaptive UI components have been implemented to enhance clarity, reduce eye strain, and improve overall user experience. This enhancement aligns the EduVerse platform with global enterprise UI practices used in leading SaaS products.
-                    </p>
-                </div>
-            </div>
 
             <AnimatePresence>
                 {showForm && !isStaff && (

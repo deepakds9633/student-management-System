@@ -63,43 +63,40 @@ public class DataSeeder implements CommandLineRunner {
                         return;
                 }
 
-                transactionTemplate.execute(status -> {
-                        try {
-                                // 1. Wipe ALL Existing Data (Absolute Zero-State)
-                                clearDatabase();
+                try {
+                        // 1. Wipe ALL Existing Data (Absolute Zero-State)
+                        clearDatabase();
 
-                                // 2. Provision Core Infrastructure Accounts
-                                createUser("admin", "admin", Role.ADMIN);
-                                User staffUser = createUser("staff", "staff", Role.STAFF);
-                                createStaff(staffUser, "Dr. Sarah Jenkins", "Information Technology");
+                        // 2. Provision Core Infrastructure Accounts
+                        createUser("admin", "admin", Role.ADMIN);
+                        User staffUser = createUser("staff", "staff", Role.STAFF);
+                        createStaff(staffUser, "Dr. Sarah Jenkins", "Information Technology");
 
-                                // 3. Provision Default Student Testing Accounts
-                                List<StudentData> studentList = getInitialStudentData();
-                                for (StudentData data : studentList) {
-                                        User u = createUser(data.rollNo, "password123", Role.STUDENT);
-                                        Student s = createStudent(u, data.name, data.rollNo + "@eduverse.com",
-                                                        data.phone, data.address);
+                        // 3. Provision Default Student Testing Accounts
+                        List<StudentData> studentList = getInitialStudentData();
+                        for (StudentData data : studentList) {
+                                User u = createUser(data.rollNo, "password123", Role.STUDENT);
+                                Student s = createStudent(u, data.name, data.rollNo + "@eduverse.com",
+                                                data.phone, data.address);
 
-                                        // 4. Seed Academic Records for High-Fidelity Validation
-                                        seedMarks(s, data);
-                                        seedAttendance(s);
-                                        seedLeaves(s);
-                                }
-
-                                // 5. Seed Global Communications
-                                seedNotifications();
-
-                                // 6. Seed Curriculum Assets (Assignments)
-                                seedAssignmentTasks();
-
-                                System.out.println(
-                                                "✅ Custom Data Integration Complete. 60 Students with precise marks and profiles seeded.");
-                        } catch (Exception e) {
-                                System.err.println("❌ Data Seeding Failure: " + e.getMessage());
-                                e.printStackTrace();
+                                // 4. Seed Academic Records for High-Fidelity Validation
+                                seedMarks(s, data);
+                                seedAttendance(s);
+                                seedLeaves(s);
                         }
-                        return null;
-                });
+
+                        // 5. Seed Global Communications
+                        seedNotifications();
+
+                        // 6. Seed Curriculum Assets (Assignments)
+                        seedAssignmentTasks();
+
+                        System.out.println(
+                                        "✅ Custom Data Integration Complete. 60 Students with precise marks and profiles seeded.");
+                } catch (Exception e) {
+                        System.err.println("❌ Data Seeding Failure: " + e.getMessage());
+                        e.printStackTrace();
+                }
         }
 
         private void clearDatabase() {

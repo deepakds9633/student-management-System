@@ -119,17 +119,7 @@ const AssignmentPage = () => {
                 )}
             </div>
 
-            <div className="p-5 rounded-2xl flex flex-col sm:flex-row gap-4 items-start mb-2" style={{ background: 'var(--primary-dim)', border: '1px solid var(--border)' }}>
-                <div className="p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
-                    <BookOpen size={24} className="text-primary" />
-                </div>
-                <div>
-                    <h3 className="font-bold text-sm mb-1.5" style={{ color: 'var(--text-primary)' }}>Adaptive Theme & Enterprise Experience</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                        The Learning Management module now features an adaptive, theme-aware interface with enterprise-grade UI standards. The system dynamically adjusts contrast, typography, and component elevation to ensure optimal accessibility and readability in both light and dark modes. This enhancement improves user experience, engagement, and usability while aligning the platform with global SaaS product design principles.
-                    </p>
-                </div>
-            </div>
+
 
             <div className="tab-group w-full sm:w-auto p-1 rounded-2xl border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                 {tabs.map(t => (
