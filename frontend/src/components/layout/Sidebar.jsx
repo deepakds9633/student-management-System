@@ -166,7 +166,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                 className="font-black tracking-tight text-sm block"
                                 style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                             >
-                                EduVerse
+                                MEC
                             </span>
                             <span className="text-[9px] font-semibold uppercase tracking-widest block" style={{ color: 'var(--text-muted)', marginTop: '-1px' }}>Management Portal</span>
                         </div>

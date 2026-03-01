@@ -76,7 +76,7 @@ public class DataSeeder implements CommandLineRunner {
                         List<StudentData> studentList = getInitialStudentData();
                         for (StudentData data : studentList) {
                                 User u = createUser(data.rollNo, "password123", Role.STUDENT);
-                                Student s = createStudent(u, data.name, data.rollNo + "@eduverse.com",
+                                Student s = createStudent(u, data.name, data.rollNo + "@mec.edu.in",
                                                 data.phone, data.address);
 
                                 // 4. Seed Academic Records for High-Fidelity Validation
@@ -125,7 +125,7 @@ public class DataSeeder implements CommandLineRunner {
                 Staff staff = new Staff();
                 staff.setUser(user);
                 staff.setName(name);
-                staff.setEmail(user.getUsername() + "@eduverse.com");
+                staff.setEmail(user.getUsername() + "@mec.edu.in");
                 staff.setDepartment(dept);
                 staffRepository.save(staff);
         }

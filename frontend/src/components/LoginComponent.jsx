@@ -134,7 +134,7 @@ const LoginComponent = () => {
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)', boxShadow: '0 4px 16px rgba(79,70,229,0.5)' }}>
                             <GraduationCap size={20} className="text-white" />
                         </div>
-                        <span className="text-white font-black text-xl tracking-tight">EduVerse</span>
+                        <span className="text-white font-black text-xl tracking-tight">MEC</span>
                     </motion.div>
                     <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>Management Portal</p>
                 </div>
@@ -173,7 +173,7 @@ const LoginComponent = () => {
                 {/* Footer */}
                 <div className="relative z-10">
                     <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                        © 2026 EduVerse. Enterprise-grade academic management.
+                        © 2026 MEC. Enterprise-grade academic management.
                     </p>
                 </div>
             </div>
@@ -197,7 +197,7 @@ const LoginComponent = () => {
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
                             <GraduationCap size={16} className="text-white" />
                         </div>
-                        <span className="font-black text-lg tracking-tight" style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>EduVerse</span>
+                        <span className="font-black text-lg tracking-tight" style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>MEC</span>
                     </div>
 
                     {/* Header */}
@@ -336,7 +336,7 @@ const LoginComponent = () => {
                     </div>
 
                     <p className="text-center text-xs mt-6" style={{ color: 'var(--text-muted)' }}>
-                        © 2026 EduVerse Student Management System
+                        © 2026 MEC Student Management System
                     </p>
                 </motion.div>
             </div>
