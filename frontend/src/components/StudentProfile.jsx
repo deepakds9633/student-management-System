@@ -20,6 +20,12 @@ const StudentProfile = () => {
     const [student, setStudent] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [isEditingContact, setIsEditingContact] = useState(false);
+    const [editPhone, setEditPhone] = useState('');
+    const [editAddress, setEditAddress] = useState('');
+    const [isSavingContact, setIsSavingContact] = useState(false);
+    const [contactError, setContactError] = useState('');
+
     // Mock data for charts
     const attendanceData = [
         { month: 'Jan', percentage: 95 },
@@ -44,6 +50,8 @@ const StudentProfile = () => {
             ])
                 .then(([studentRes, marksRes]) => {
                     setStudent(studentRes.data);
+                    setEditPhone(studentRes.data.phoneNumber || '');
+                    setEditAddress(studentRes.data.address || '');
 
                     // Aggregate marks by subject, taking the average if multiple exist
                     const rawMarks = marksRes.data;
@@ -66,6 +74,22 @@ const StudentProfile = () => {
                 .finally(() => setLoading(false));
         }
     }, [id]);
+
+    const handleUpdateContact = async () => {
+        setIsSavingContact(true);
+        setContactError('');
+        try {
+            const updatedStudent = { ...student, phoneNumber: editPhone, address: editAddress };
+            const res = await axios.put(`http://localhost:8080/api/students/${id}`, updatedStudent, { headers });
+            setStudent(res.data);
+            setIsEditingContact(false);
+        } catch (err) {
+            console.error('Failed to update contact info:', err);
+            setContactError(err.response?.data?.message || 'Failed to update contact info');
+        } finally {
+            setIsSavingContact(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -173,27 +197,67 @@ const StudentProfile = () => {
                 <div className="space-y-6">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
                         className="md-card p-6">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-6">Contact & Logistics</h3>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest opacity-40">Contact & Logistics</h3>
+                            {!isEditingContact && (currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.roles?.includes('ROLE_STAFF')) && (
+                                <button onClick={() => setIsEditingContact(true)}
+                                    className="text-[10px] font-bold text-primary hover:text-primary-focus transition-colors">
+                                    Edit Details
+                                </button>
+                            )}
+                        </div>
+
+                        {contactError && (
+                            <div className="mb-4 text-[10px] font-bold text-danger bg-danger/10 px-3 py-2 rounded-lg border border-danger/20">
+                                {contactError}
+                            </div>
+                        )}
+
                         <div className="space-y-6">
                             <div className="flex items-start gap-4 p-3 rounded-2xl border"
                                 style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                                 <div className="p-2.5 rounded-xl shadow-sm border text-primary"
                                     style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}><Phone size={18} /></div>
-                                <div>
+                                <div className="flex-1">
                                     <div className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-0.5">Emergency Contact</div>
-                                    <div className="text-sm font-bold">+1 (555) 000-0000</div>
+                                    {isEditingContact ? (
+                                        <input type="text" value={editPhone} onChange={e => setEditPhone(e.target.value)}
+                                            className="w-full bg-transparent border-b border-border focus:border-primary outline-none text-sm font-bold py-1 transition-colors"
+                                            placeholder="Enter phone number" />
+                                    ) : (
+                                        <div className="text-sm font-bold">{student.phoneNumber || 'Not Provided'}</div>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-start gap-4 p-3 rounded-2xl border"
                                 style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                                 <div className="p-2.5 rounded-xl shadow-sm border text-accent"
                                     style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}><MapPin size={18} /></div>
-                                <div>
+                                <div className="flex-1">
                                     <div className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-0.5">Primary Residence</div>
-                                    <div className="text-sm font-bold leading-snug">123 Academic St, Newton Campus, NY 10001</div>
+                                    {isEditingContact ? (
+                                        <textarea value={editAddress} onChange={e => setEditAddress(e.target.value)}
+                                            className="w-full bg-transparent border-b border-border focus:border-primary outline-none text-sm font-bold py-1 transition-colors resize-none h-16"
+                                            placeholder="Enter full address"></textarea>
+                                    ) : (
+                                        <div className="text-sm font-bold leading-snug">{student.address || 'Not Provided'}</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
+
+                        {isEditingContact && (
+                            <div className="flex justify-end gap-2 mt-6">
+                                <button onClick={() => { setIsEditingContact(false); setEditPhone(student.phoneNumber || ''); setEditAddress(student.address || ''); setContactError(''); }}
+                                    className="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-text-muted hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border">
+                                    Cancel
+                                </button>
+                                <button onClick={handleUpdateContact} disabled={isSavingContact}
+                                    className="btn-primary !px-4 !py-1.5 !rounded-lg !text-xs shadow-md hover:shadow-lg disabled:opacity-50">
+                                    {isSavingContact ? 'Saving...' : 'Save Changes'}
+                                </button>
+                            </div>
+                        )}
                     </motion.div>
 
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}

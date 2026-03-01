@@ -13,7 +13,7 @@ public class MarkService {
     @Autowired
     private MarkRepository markRepository;
 
-    public Mark addMark(Mark mark) {
+    public Mark addMark(@org.springframework.lang.NonNull Mark mark) {
         return markRepository.save(mark);
     }
 

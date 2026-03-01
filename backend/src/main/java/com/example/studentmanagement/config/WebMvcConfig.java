@@ -9,7 +9,7 @@ import java.io.File;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@org.springframework.lang.NonNull ResourceHandlerRegistry registry) {
         String uploadDir = System.getProperty("user.home") + File.separator + "student-mgmt-uploads" + File.separator;
 
         // Map /api/files/** to the external upload directory

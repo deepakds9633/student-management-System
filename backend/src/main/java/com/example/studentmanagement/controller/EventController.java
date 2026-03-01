@@ -35,7 +35,8 @@ public class EventController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
+    public ResponseEntity<?> updateEvent(@PathVariable @org.springframework.lang.NonNull Long id,
+            @RequestBody Event eventDetails) {
         return eventRepository.findById(id).map(event -> {
             event.setTitle(eventDetails.getTitle());
             event.setDescription(eventDetails.getDescription());
@@ -48,7 +49,7 @@ public class EventController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable @org.springframework.lang.NonNull Long id) {
         return eventRepository.findById(id).map(event -> {
             eventRepository.delete(event);
             return ResponseEntity.ok().build();

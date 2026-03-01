@@ -18,19 +18,19 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Optional<Student> getStudentById(Long id) {
+    public Optional<Student> getStudentById(@org.springframework.lang.NonNull Long id) {
         return studentRepository.findById(id);
     }
 
-    public Student saveStudent(Student student) {
+    public Student saveStudent(@org.springframework.lang.NonNull Student student) {
         return studentRepository.save(student);
     }
 
-    public void deleteStudent(Long id) {
+    public void deleteStudent(@org.springframework.lang.NonNull Long id) {
         studentRepository.deleteById(id);
     }
 
-    public Student updateStudent(Long id, Student studentDetails) {
+    public Student updateStudent(@org.springframework.lang.NonNull Long id, Student studentDetails) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
         student.setName(studentDetails.getName());
         student.setEmail(studentDetails.getEmail());

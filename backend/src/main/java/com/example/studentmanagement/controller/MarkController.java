@@ -36,7 +36,7 @@ public class MarkController {
 
     @PostMapping
     @PreAuthorize("hasRole('STAFF')")
-    public Mark addMark(@RequestBody Mark mark) {
+    public Mark addMark(@RequestBody @org.springframework.lang.NonNull Mark mark) {
         return markService.addMark(mark);
     }
 

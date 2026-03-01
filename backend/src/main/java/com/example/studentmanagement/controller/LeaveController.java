@@ -55,6 +55,7 @@ public class LeaveController {
             if (isStaff) {
                 Long sid = null;
                 if (body.containsKey("student")) {
+                    @SuppressWarnings("unchecked")
                     Map<String, Object> studentMap = (Map<String, Object>) body.get("student");
                     if (studentMap.containsKey("id"))
                         sid = Long.valueOf(studentMap.get("id").toString());
@@ -120,7 +121,8 @@ public class LeaveController {
             if (leaves.isEmpty()) {
                 Student student = studentRepository.findByUserId(id).orElse(null);
                 if (student != null) {
-                    leaves = leaveService.getLeavesByStudent(student.getId());
+                    Long existingStudentId = student.getId();
+                    leaves = leaveService.getLeavesByStudent(existingStudentId);
                 }
             }
             return ResponseEntity.ok(leaves);
@@ -143,7 +145,7 @@ public class LeaveController {
 
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<Leave> approveLeave(@PathVariable("id") Long id,
+    public ResponseEntity<Leave> approveLeave(@PathVariable("id") @org.springframework.lang.NonNull Long id,
             @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         Leave approvedLeave = leaveService.approveLeave(id, remarks);
@@ -164,7 +166,7 @@ public class LeaveController {
 
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<Leave> rejectLeave(@PathVariable("id") Long id,
+    public ResponseEntity<Leave> rejectLeave(@PathVariable("id") @org.springframework.lang.NonNull Long id,
             @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         Leave rejectedLeave = leaveService.rejectLeave(id, remarks);

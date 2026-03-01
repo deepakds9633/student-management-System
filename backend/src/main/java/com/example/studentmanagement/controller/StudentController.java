@@ -36,18 +36,21 @@ public class StudentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public List<Student> getAllStudents() {
         return studentService.getAllStudents();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('STUDENT')")
     public Student getStudentById(@PathVariable("id") String id, Principal principal) {
-        boolean isStaff = userRepository.findByUsername(principal.getName())
-                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+        boolean hasPrivilege = userRepository.findByUsername(principal.getName())
+                .map(u -> {
+                    String roleName = u.getRole().name();
+                    return roleName.equals("ADMIN") || roleName.equals("STAFF");
+                }).orElse(false);
 
-        if (!isStaff || id.equals("me")) {
+        if (!hasPrivilege || id.equals("me")) {
             Student student = getStudentFromPrincipal(principal);
             if (student == null)
                 throw new RuntimeException("Authorized student profile not found");
@@ -63,12 +66,16 @@ public class StudentController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('STAFF') or hasRole('STUDENT')")
-    public Student getStudentByUserId(@PathVariable("userId") String userId, Principal principal) {
-        boolean isStaff = userRepository.findByUsername(principal.getName())
-                .map(u -> u.getRole().name().equals("STAFF")).orElse(false);
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('STUDENT')")
+    public Student getStudentByUserId(@PathVariable("userId") @org.springframework.lang.NonNull String userId,
+            Principal principal) {
+        boolean hasPrivilege = userRepository.findByUsername(principal.getName())
+                .map(u -> {
+                    String roleName = u.getRole().name();
+                    return roleName.equals("ADMIN") || roleName.equals("STAFF");
+                }).orElse(false);
 
-        if (!isStaff || userId.equals("me")) {
+        if (!hasPrivilege || userId.equals("me")) {
             Student student = getStudentFromPrincipal(principal);
             if (student == null)
                 throw new RuntimeException("Authorized student profile not found");
@@ -76,15 +83,16 @@ public class StudentController {
         }
 
         try {
-            return studentService.getStudentByUserId(Long.valueOf(userId))
-                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            Long id = Long.valueOf(userId);
+            return studentService.getStudentByUserId(id)
+                    .orElseThrow(() -> new RuntimeException("Student user not found"));
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid user ID");
         }
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public Student createStudent(@RequestBody Student student) {
         // Create User for Student if authentication details are provided in a DTO,
         // but since we are receiving Student entity directly, we might need a DTO or
@@ -107,14 +115,15 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
-    public Student updateStudent(@PathVariable("id") Long id, @RequestBody Student studentDetails) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
+    public Student updateStudent(@PathVariable("id") @org.springframework.lang.NonNull Long id,
+            @RequestBody Student studentDetails) {
         return studentService.updateStudent(id, studentDetails);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
-    public void deleteStudent(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
+    public void deleteStudent(@PathVariable("id") @org.springframework.lang.NonNull Long id) {
         studentService.deleteStudent(id);
     }
 }

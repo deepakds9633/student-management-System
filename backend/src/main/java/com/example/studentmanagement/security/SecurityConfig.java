@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/files/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/profile/avatar/**").permitAll()
                         .requestMatchers("/api/announcements/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());

@@ -131,7 +131,8 @@ public class ProfileController {
     }
 
     @GetMapping("/avatar/{username}")
-    public ResponseEntity<byte[]> getAvatarByUsername(@PathVariable("username") String username) {
+    public ResponseEntity<byte[]> getAvatarByUsername(
+            @PathVariable("username") @org.springframework.lang.NonNull String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();

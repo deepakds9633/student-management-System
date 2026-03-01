@@ -41,7 +41,8 @@ public class AdminController {
     // Update user role
     @PutMapping("/users/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateUserRole(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updateUserRole(@PathVariable("id") @org.springframework.lang.NonNull Long id,
+            @RequestBody Map<String, String> body) {
         try {
             Optional<User> userOpt = userRepository.findById(id);
             if (userOpt.isEmpty()) {
@@ -69,7 +70,8 @@ public class AdminController {
     // Update user details (username + password + role)
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") @org.springframework.lang.NonNull Long id,
+            @RequestBody Map<String, String> body) {
         try {
             Optional<User> userOpt = userRepository.findById(id);
             if (userOpt.isEmpty()) {
@@ -105,7 +107,7 @@ public class AdminController {
     // Delete user (handles foreign key constraints)
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") @org.springframework.lang.NonNull Long id) {
         try {
             if (!userRepository.existsById(id)) {
                 return ResponseEntity.badRequest().body(Map.of("message", "User not found"));

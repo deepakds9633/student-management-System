@@ -25,7 +25,7 @@ public class LeaveService {
         return leaveRepository.save(leave);
     }
 
-    public List<Leave> getLeavesByStudent(Long studentId) {
+    public List<Leave> getLeavesByStudent(@org.springframework.lang.NonNull Long studentId) {
         return leaveRepository.findByStudentIdOrderByAppliedAtDesc(studentId);
     }
 
@@ -37,7 +37,7 @@ public class LeaveService {
         return leaveRepository.findAllByOrderByAppliedAtDesc();
     }
 
-    public Leave approveLeave(Long leaveId, String remarks) {
+    public Leave approveLeave(@org.springframework.lang.NonNull Long leaveId, String remarks) {
         Leave leave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Leave not found"));
         leave.setStatus("APPROVED");
@@ -60,7 +60,7 @@ public class LeaveService {
         return leaveRepository.save(leave);
     }
 
-    public Leave rejectLeave(Long leaveId, String remarks) {
+    public Leave rejectLeave(@org.springframework.lang.NonNull Long leaveId, String remarks) {
         Leave leave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Leave not found"));
         leave.setStatus("REJECTED");

@@ -18,15 +18,15 @@ public class StaffService {
         return staffRepository.findAll();
     }
 
-    public Optional<Staff> getStaffById(Long id) {
+    public Optional<Staff> getStaffById(@org.springframework.lang.NonNull Long id) {
         return staffRepository.findById(id);
     }
 
-    public Staff saveStaff(Staff staff) {
+    public Staff saveStaff(@org.springframework.lang.NonNull Staff staff) {
         return staffRepository.save(staff);
     }
 
-    public void deleteStaff(Long id) {
+    public void deleteStaff(@org.springframework.lang.NonNull Long id) {
         staffRepository.deleteById(id);
     }
 

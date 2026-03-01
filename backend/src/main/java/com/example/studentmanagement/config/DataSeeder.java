@@ -50,9 +50,6 @@ public class DataSeeder implements CommandLineRunner {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        @Autowired
-        private TransactionTemplate transactionTemplate;
-
         private final Random random = new Random();
 
         @Override

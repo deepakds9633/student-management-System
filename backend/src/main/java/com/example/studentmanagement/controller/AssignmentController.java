@@ -61,7 +61,7 @@ public class AssignmentController {
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
     public ResponseEntity<?> submitAssignment(
             @RequestParam(value = "studentId", required = false) Long studentId,
-            @RequestParam("taskId") Long taskId,
+            @RequestParam("taskId") @org.springframework.lang.NonNull Long taskId,
             @RequestParam(value = "file", required = false) MultipartFile file,
             Principal principal) {
 
@@ -164,7 +164,8 @@ public class AssignmentController {
 
     @PutMapping("/{id}/grade")
     @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<?> gradeAssignment(@PathVariable("id") Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> gradeAssignment(@PathVariable("id") @org.springframework.lang.NonNull Long id,
+            @RequestBody Map<String, String> body) {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assignment not found"));
         assignment.setGrade(body.getOrDefault("grade", ""));
@@ -212,13 +213,14 @@ public class AssignmentController {
 
     @GetMapping("/tasks/{id}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('STAFF')")
-    public ResponseEntity<AssignmentTask> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<AssignmentTask> getTaskById(@PathVariable @org.springframework.lang.NonNull Long id) {
         return ResponseEntity.ok(assignmentTaskRepository.findById(id).orElse(null));
     }
 
     @GetMapping("/submissions/task/{taskId}")
     @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<List<Assignment>> getSubmissionsByTask(@PathVariable Long taskId) {
+    public ResponseEntity<List<Assignment>> getSubmissionsByTask(
+            @PathVariable @org.springframework.lang.NonNull Long taskId) {
         return ResponseEntity.ok(assignmentRepository.findByTaskId(taskId));
     }
 

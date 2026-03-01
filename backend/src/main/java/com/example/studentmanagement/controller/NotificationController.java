@@ -53,7 +53,8 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Notification> getNotificationById(@PathVariable("id") Long id) {
+    public ResponseEntity<Notification> getNotificationById(
+            @PathVariable("id") @org.springframework.lang.NonNull Long id) {
         return notificationRepository.findById(id)
                 .filter(Notification::isActive)
                 .map(ResponseEntity::ok)
@@ -142,7 +143,8 @@ public class NotificationController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
-    public ResponseEntity<Notification> updateNotification(@PathVariable("id") Long id,
+    public ResponseEntity<Notification> updateNotification(
+            @PathVariable("id") @org.springframework.lang.NonNull Long id,
             @RequestBody Notification updated) {
         return notificationRepository.findById(id).map(notif -> {
             if (updated.getTitle() != null)
@@ -162,7 +164,7 @@ public class NotificationController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
-    public ResponseEntity<?> deleteNotification(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteNotification(@PathVariable("id") @org.springframework.lang.NonNull Long id) {
         return notificationRepository.findById(id).map(notif -> {
             notif.setActive(false);
             notificationRepository.save(notif);
