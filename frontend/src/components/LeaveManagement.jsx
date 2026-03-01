@@ -140,8 +140,7 @@ const LeaveManagement = () => {
                 {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map(f => (
                     <button key={f} onClick={() => setActiveFilter(f)}
                         className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all flex items-center gap-2
-                        ${activeFilter === f ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border opacity-50 hover:opacity-100 scale-95 hover:scale-100'}`}
-                        style={activeFilter !== f ? { background: 'var(--bg-surface)', borderColor: 'var(--border-strong)', color: 'var(--text-primary)' } : {}}>
+                        ${activeFilter === f ? 'btn-primary shadow-lg shadow-primary/20' : 'btn-ghost border opacity-50 hover:opacity-100 scale-95 hover:scale-100'}`}>
                         {f} <span className="opacity-40 tabular-nums">({f === 'ALL' ? leaves.length : leaves.filter(l => l.status === f).length})</span>
                     </button>
                 ))}

@@ -249,7 +249,7 @@ const StudentProfile = () => {
                         {isEditingContact && (
                             <div className="flex justify-end gap-2 mt-6">
                                 <button onClick={() => { setIsEditingContact(false); setEditPhone(student.phoneNumber || ''); setEditAddress(student.address || ''); setContactError(''); }}
-                                    className="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-text-muted hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border">
+                                    className="btn-secondary !px-4 !py-1.5 !rounded-lg !text-xs">
                                     Cancel
                                 </button>
                                 <button onClick={handleUpdateContact} disabled={isSavingContact}
