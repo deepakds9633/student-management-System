@@ -1,7 +1,9 @@
 package com.example.studentmanagement.controller;
 
-import com.example.studentmanagement.User;
 import com.example.studentmanagement.Role;
+import com.example.studentmanagement.Student;
+import com.example.studentmanagement.User;
+import com.example.studentmanagement.repository.StudentRepository;
 import com.example.studentmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -146,8 +151,31 @@ public class AdminController {
             User user = new User();
             user.setUsername(username);
             user.setPassword(passwordEncoder.encode(password));
-            user.setRole(Role.valueOf(role != null ? role.toUpperCase() : "STUDENT"));
+            String email = body.get("email");
+            if (email != null && !email.isEmpty()) {
+                user.setEmail(email);
+            }
+            Role resolvedRole = Role.valueOf(role != null ? role.toUpperCase() : "STUDENT");
+            user.setRole(resolvedRole);
             userRepository.save(user);
+
+            // Auto-create a Student profile when the role is STUDENT
+            if (resolvedRole == Role.STUDENT) {
+                Student student = new Student();
+                student.setUser(user); // @MapsId shares the same PK
+                student.setName(body.getOrDefault("name", username));
+                student.setEmail(email != null && !email.isEmpty()
+                        ? email
+                        : username + "@student.edu");
+                student.setCourse(body.getOrDefault("course", ""));
+                student.setYear(body.getOrDefault("year", ""));
+                student.setSemester(body.getOrDefault("semester", ""));
+                student.setDepartment(body.getOrDefault("department", ""));
+                student.setPhoneNumber(body.getOrDefault("phoneNumber", ""));
+                student.setAddress(body.getOrDefault("address", ""));
+                studentRepository.save(student);
+            }
+
             return ResponseEntity.ok(Map.of("message", "User created successfully", "id", user.getId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("message", "Create failed: " + e.getMessage()));
