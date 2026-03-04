@@ -47,7 +47,7 @@ const ExportReports = () => {
             desc: 'Subject-wise proficiency and granular mark breakdown',
             icon: <FileSpreadsheet size={24} />,
             color: 'accent',
-            csv: `/export/marks/csv/${user?.id}`,
+            csv: isStaff ? '/export/marks/csv' : `/export/marks/csv/${user?.id}`,
             csvFile: 'Scholastic_Audit_Report.csv'
         },
         {
@@ -55,7 +55,7 @@ const ExportReports = () => {
             desc: 'Chronological attendance tracking and participation metrics',
             icon: <Calendar size={24} />,
             color: 'success',
-            csv: `/export/attendance/csv/${user?.id}`,
+            csv: isStaff ? '/export/attendance/csv' : `/export/attendance/csv/${user?.id}`,
             csvFile: 'Engagement_Lifecycle_Log.csv'
         },
     ];
@@ -127,47 +127,6 @@ const ExportReports = () => {
                 ))}
             </div>
 
-            {/* Info Section */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                className="md-card p-10 bg-slate-50 dark:bg-[#0c121e] border-none shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-10 opacity-5 -mr-10 -mt-10 group-hover:rotate-12 transition-transform duration-700">
-                    <ShieldCheck size={200} />
-                </div>
-
-                <div className="relative z-10 flex flex-col md:flex-row items-start gap-10">
-                    <div className="flex-1 space-y-6">
-                        <div className="flex items-center gap-3">
-                            <Info className="text-primary" size={24} />
-                            <h3 className="text-xl font-black tracking-tight">Security & Protocol</h3>
-                        </div>
-                        <p className="text-sm font-medium opacity-60 leading-relaxed max-w-2xl">
-                            All data extractions are cryptographically verified and contain real-time state snapshots from the institutional database.
-                            CSV payloads are optimized for integration with Microsoft Excel, Google Sheets, and other advanced analytical platforms.
-                        </p>
-                        <div className="flex flex-wrap gap-4">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                                <CheckCircle2 size={14} className="text-success" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Real-time Sync</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                                <CheckCircle2 size={14} className="text-success" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Excel Compatible</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
-                                <CheckCircle2 size={14} className="text-success" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Verified Origin</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full md:w-auto p-8 rounded-[2.5rem] bg-gradient-to-br from-primary to-accent flex flex-col items-center justify-center text-white shadow-2xl shadow-primary/30">
-                        <Sparkles size={40} className="mb-4" />
-                        <div className="text-center">
-                            <div className="text-xs font-black uppercase tracking-[0.2em] opacity-60 mb-1">System Health</div>
-                            <div className="text-3xl font-black tracking-tighter">OPTIMAL</div>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
         </div>
     );
 };

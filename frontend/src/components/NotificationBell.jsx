@@ -94,7 +94,7 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button onClick={openDropdown}
                 className="relative p-2.5 rounded-xl transition-all hover:bg-slate-100 dark:hover:bg-slate-800 group active:scale-95">
-                <Bell size={20} className="text-slate-400 group-hover:text-primary transition-colors" />
+                <Bell size={20} className="text-[#f59e0b] group-hover:text-primary transition-colors" />
                 <AnimatePresence>
                     {count > 0 && (
                         <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
@@ -109,9 +109,9 @@ const NotificationBell = () => {
                         className="absolute right-0 top-full mt-3 w-80 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden z-[100]">
 
                         <div className="px-6 py-5 border-b border-slate-50 dark:border-slate-800/50 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
-                            <h3 className="text-xs font-black uppercase tracking-widest opacity-60">Intelligence Feed</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Intelligence Feed</h3>
                             {recent.length > 0 && (
-                                <button onClick={() => setRecent([])} className="text-[9px] font-black uppercase tracking-widest text-primary opacity-60 hover:opacity-100">Clear</button>
+                                <button onClick={() => setRecent([])} className="text-[9px] font-black uppercase tracking-widest text-white opacity-60 hover:opacity-100">Clear</button>
                             )}
                         </div>
 
@@ -122,9 +122,9 @@ const NotificationBell = () => {
                                     <p className="text-[9px] font-black uppercase tracking-widest opacity-20">Fetching Data...</p>
                                 </div>
                             ) : recent.length === 0 ? (
-                                <div className="p-10 text-center space-y-3 opacity-30">
-                                    <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-2xl mx-auto flex items-center justify-center"><Bell size={20} /></div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest">No active transmissions</p>
+                                <div className="p-10 text-center space-y-3">
+                                    <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-2xl mx-auto flex items-center justify-center"><Bell size={20} className="text-[#f59e0b]" /></div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">No active transmissions</p>
                                 </div>
                             ) : (
                                 recent.map((item, idx) => (
@@ -138,10 +138,10 @@ const NotificationBell = () => {
                                             <div className="flex-1 space-y-1">
                                                 <div className="flex items-center gap-2">
                                                     <span className="opacity-40">{categoryIcons[item.category]}</span>
-                                                    <p className="text-[11px] font-black tracking-tight truncate group-hover:text-primary transition-colors">{item.title}</p>
+                                                    <p className="text-[11px] font-black tracking-tight truncate text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">{item.title}</p>
                                                 </div>
-                                                <p className="text-[10px] font-medium opacity-50 line-clamp-1">{item.message}</p>
-                                                <div className="flex items-center gap-2 pt-1 text-[9px] font-black uppercase tracking-widest opacity-20">
+                                                <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400 line-clamp-1">{item.message}</p>
+                                                <div className="flex items-center gap-2 pt-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                                                     <Clock size={8} /> {item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'Just now'}
                                                 </div>
                                             </div>

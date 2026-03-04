@@ -70,11 +70,11 @@ const NotificationComponent = () => {
                     <h1 className="text-3xl font-black tracking-tighter flex items-center gap-3">
                         <Inbox className="text-primary" size={32} /> Intelligence Center
                     </h1>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Institutional Communication Log</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mt-1">Institutional Communication Log</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:text-primary transition-colors" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors" size={14} />
                         <input
                             type="text"
                             placeholder="Filter by keyword..."
@@ -121,7 +121,7 @@ const NotificationComponent = () => {
                                             <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${priorityColors[n.priority] || priorityColors.NORMAL}`}>
                                                 {n.priority || 'NORMAL'}
                                             </span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-20 flex items-center gap-1">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-1">
                                                 <Clock size={10} /> {new Date(n.timestamp).toLocaleDateString()} • {new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -130,14 +130,14 @@ const NotificationComponent = () => {
                                         </button>
                                     </div>
 
-                                    <p className="text-sm font-semibold tracking-tight leading-relaxed group-hover:text-primary transition-colors pr-8">
+                                    <p className="text-sm font-semibold tracking-tight leading-relaxed text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors pr-8">
                                         {n.message}
                                     </p>
 
                                     <div className="flex items-center gap-4 pt-1">
                                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/50">
                                             <CheckCircle2 size={10} className="text-success" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Delivered</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Delivered</span>
                                         </div>
                                     </div>
                                 </div>

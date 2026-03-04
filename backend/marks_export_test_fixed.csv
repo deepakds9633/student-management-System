@@ -1,0 +1,301 @@
+Student ID,Student Name,Subject,Exam Type,Obtained,Max Marks,Percentage
+3,"AASANTH M","Mobile Computing","Internal-I",48,50,96.0%
+3,"AASANTH M","PCD","Internal-I",44,50,88.0%
+3,"AASANTH M","Cloud Computing AWS","Internal-I",27,50,54.0%
+3,"AASANTH M","Web Technology","Internal-I",35,50,70.0%
+3,"AASANTH M","Docker & K8s","Internal-I",35,50,70.0%
+4,"AJAYPRABHAKAR S R","Mobile Computing","Internal-I",39,50,78.0%
+4,"AJAYPRABHAKAR S R","PCD","Internal-I",40,50,80.0%
+4,"AJAYPRABHAKAR S R","Cloud Computing AWS","Internal-I",12,50,24.0%
+4,"AJAYPRABHAKAR S R","Web Technology","Internal-I",37,50,74.0%
+4,"AJAYPRABHAKAR S R","Docker & K8s","Internal-I",32,50,64.0%
+5,"AJAYPRASANNA P","Mobile Computing","Internal-I",38,50,76.0%
+5,"AJAYPRASANNA P","PCD","Internal-I",36,50,72.0%
+5,"AJAYPRASANNA P","Cloud Computing AWS","Internal-I",39,50,78.0%
+5,"AJAYPRASANNA P","Web Technology","Internal-I",26,50,52.0%
+5,"AJAYPRASANNA P","Docker & K8s","Internal-I",31,50,62.0%
+6,"ARULMOZHI R","Mobile Computing","Internal-I",47,50,94.0%
+6,"ARULMOZHI R","PCD","Internal-I",42,50,84.0%
+6,"ARULMOZHI R","Cloud Computing AWS","Internal-I",44,50,88.0%
+6,"ARULMOZHI R","Web Technology","Internal-I",45,50,90.0%
+6,"ARULMOZHI R","Docker & K8s","Internal-I",42,50,84.0%
+7,"ASHWINI M","Mobile Computing","Internal-I",48,50,96.0%
+7,"ASHWINI M","PCD","Internal-I",43,50,86.0%
+7,"ASHWINI M","Cloud Computing AWS","Internal-I",46,50,92.0%
+7,"ASHWINI M","Web Technology","Internal-I",44,50,88.0%
+7,"ASHWINI M","Docker & K8s","Internal-I",44,50,88.0%
+8,"ATCHAYA M","Mobile Computing","Internal-I",47,50,94.0%
+8,"ATCHAYA M","PCD","Internal-I",44,50,88.0%
+8,"ATCHAYA M","Cloud Computing AWS","Internal-I",47,50,94.0%
+8,"ATCHAYA M","Web Technology","Internal-I",45,50,90.0%
+8,"ATCHAYA M","Docker & K8s","Internal-I",42,50,84.0%
+9,"BALAJI M","Mobile Computing","Internal-I",44,50,88.0%
+9,"BALAJI M","PCD","Internal-I",41,50,82.0%
+9,"BALAJI M","Cloud Computing AWS","Internal-I",41,50,82.0%
+9,"BALAJI M","Web Technology","Internal-I",43,50,86.0%
+9,"BALAJI M","Docker & K8s","Internal-I",40,50,80.0%
+10,"BARATH C","Mobile Computing","Internal-I",AB,50,0.0%
+10,"BARATH C","PCD","Internal-I",AB,50,0.0%
+10,"BARATH C","Cloud Computing AWS","Internal-I",7,50,14.0%
+10,"BARATH C","Web Technology","Internal-I",29,50,58.0%
+10,"BARATH C","Docker & K8s","Internal-I",35,50,70.0%
+11,"DEEPAK P","Mobile Computing","Internal-I",46,50,92.0%
+11,"DEEPAK P","PCD","Internal-I",41,50,82.0%
+11,"DEEPAK P","Cloud Computing AWS","Internal-I",42,50,84.0%
+11,"DEEPAK P","Web Technology","Internal-I",45,50,90.0%
+11,"DEEPAK P","Docker & K8s","Internal-I",38,50,76.0%
+12,"DEEPAK S","Mobile Computing","Internal-I",44,50,88.0%
+12,"DEEPAK S","PCD","Internal-I",35,50,70.0%
+12,"DEEPAK S","Cloud Computing AWS","Internal-I",AB,50,0.0%
+12,"DEEPAK S","Web Technology","Internal-I",40,50,80.0%
+12,"DEEPAK S","Docker & K8s","Internal-I",36,50,72.0%
+13,"DEEPIKASHREE G","Mobile Computing","Internal-I",AB,50,0.0%
+13,"DEEPIKASHREE G","PCD","Internal-I",AB,50,0.0%
+13,"DEEPIKASHREE G","Cloud Computing AWS","Internal-I",AB,50,0.0%
+13,"DEEPIKASHREE G","Web Technology","Internal-I",AB,50,0.0%
+13,"DEEPIKASHREE G","Docker & K8s","Internal-I",AB,50,0.0%
+14,"DEVA PRASATH R","Mobile Computing","Internal-I",44,50,88.0%
+14,"DEVA PRASATH R","PCD","Internal-I",44,50,88.0%
+14,"DEVA PRASATH R","Cloud Computing AWS","Internal-I",48,50,96.0%
+14,"DEVA PRASATH R","Web Technology","Internal-I",48,50,96.0%
+14,"DEVA PRASATH R","Docker & K8s","Internal-I",37,50,74.0%
+15,"DHANALAKSHMI S","Mobile Computing","Internal-I",48,50,96.0%
+15,"DHANALAKSHMI S","PCD","Internal-I",40,50,80.0%
+15,"DHANALAKSHMI S","Cloud Computing AWS","Internal-I",46,50,92.0%
+15,"DHANALAKSHMI S","Web Technology","Internal-I",47,50,94.0%
+15,"DHANALAKSHMI S","Docker & K8s","Internal-I",36,50,72.0%
+16,"DHANURDHAR T S","Mobile Computing","Internal-I",45,50,90.0%
+16,"DHANURDHAR T S","PCD","Internal-I",41,50,82.0%
+16,"DHANURDHAR T S","Cloud Computing AWS","Internal-I",37,50,74.0%
+16,"DHANURDHAR T S","Web Technology","Internal-I",39,50,78.0%
+16,"DHANURDHAR T S","Docker & K8s","Internal-I",42,50,84.0%
+17,"DHANUSHKUMAR S","Mobile Computing","Internal-I",48,50,96.0%
+17,"DHANUSHKUMAR S","PCD","Internal-I",41,50,82.0%
+17,"DHANUSHKUMAR S","Cloud Computing AWS","Internal-I",43,50,86.0%
+17,"DHANUSHKUMAR S","Web Technology","Internal-I",46,50,92.0%
+17,"DHANUSHKUMAR S","Docker & K8s","Internal-I",43,50,86.0%
+18,"DHATCHANAMOORTHY M S","Mobile Computing","Internal-I",43,50,86.0%
+18,"DHATCHANAMOORTHY M S","PCD","Internal-I",35,50,70.0%
+18,"DHATCHANAMOORTHY M S","Cloud Computing AWS","Internal-I",45,50,90.0%
+18,"DHATCHANAMOORTHY M S","Web Technology","Internal-I",42,50,84.0%
+18,"DHATCHANAMOORTHY M S","Docker & K8s","Internal-I",36,50,72.0%
+19,"DHAVASRI P","Mobile Computing","Internal-I",48,50,96.0%
+19,"DHAVASRI P","PCD","Internal-I",44,50,88.0%
+19,"DHAVASRI P","Cloud Computing AWS","Internal-I",46,50,92.0%
+19,"DHAVASRI P","Web Technology","Internal-I",46,50,92.0%
+19,"DHAVASRI P","Docker & K8s","Internal-I",38,50,76.0%
+20,"DHINESH M","Mobile Computing","Internal-I",42,50,84.0%
+20,"DHINESH M","PCD","Internal-I",35,50,70.0%
+20,"DHINESH M","Cloud Computing AWS","Internal-I",AB,50,0.0%
+20,"DHINESH M","Web Technology","Internal-I",26,50,52.0%
+20,"DHINESH M","Docker & K8s","Internal-I",27,50,54.0%
+21,"DHOSHITH P","Mobile Computing","Internal-I",42,50,84.0%
+21,"DHOSHITH P","PCD","Internal-I",43,50,86.0%
+21,"DHOSHITH P","Cloud Computing AWS","Internal-I",13,50,26.0%
+21,"DHOSHITH P","Web Technology","Internal-I",30,50,60.0%
+21,"DHOSHITH P","Docker & K8s","Internal-I",27,50,54.0%
+22,"DIKSHA P","Mobile Computing","Internal-I",48,50,96.0%
+22,"DIKSHA P","PCD","Internal-I",42,50,84.0%
+22,"DIKSHA P","Cloud Computing AWS","Internal-I",46,50,92.0%
+22,"DIKSHA P","Web Technology","Internal-I",44,50,88.0%
+22,"DIKSHA P","Docker & K8s","Internal-I",41,50,82.0%
+23,"DIVYA T","Mobile Computing","Internal-I",41,50,82.0%
+23,"DIVYA T","PCD","Internal-I",42,50,84.0%
+23,"DIVYA T","Cloud Computing AWS","Internal-I",46,50,92.0%
+23,"DIVYA T","Web Technology","Internal-I",42,50,84.0%
+23,"DIVYA T","Docker & K8s","Internal-I",40,50,80.0%
+24,"DURGADEVI S","Mobile Computing","Internal-I",48,50,96.0%
+24,"DURGADEVI S","PCD","Internal-I",41,50,82.0%
+24,"DURGADEVI S","Cloud Computing AWS","Internal-I",48,50,96.0%
+24,"DURGADEVI S","Web Technology","Internal-I",45,50,90.0%
+24,"DURGADEVI S","Docker & K8s","Internal-I",39,50,78.0%
+25,"GOKULNATH K","Mobile Computing","Internal-I",44,50,88.0%
+25,"GOKULNATH K","PCD","Internal-I",42,50,84.0%
+25,"GOKULNATH K","Cloud Computing AWS","Internal-I",40,50,80.0%
+25,"GOKULNATH K","Web Technology","Internal-I",38,50,76.0%
+25,"GOKULNATH K","Docker & K8s","Internal-I",39,50,78.0%
+26,"GOWTHAM A","Mobile Computing","Internal-I",43,50,86.0%
+26,"GOWTHAM A","PCD","Internal-I",41,50,82.0%
+26,"GOWTHAM A","Cloud Computing AWS","Internal-I",42,50,84.0%
+26,"GOWTHAM A","Web Technology","Internal-I",40,50,80.0%
+26,"GOWTHAM A","Docker & K8s","Internal-I",34,50,68.0%
+27,"GOWTHAM S","Mobile Computing","Internal-I",AB,50,0.0%
+27,"GOWTHAM S","PCD","Internal-I",AB,50,0.0%
+27,"GOWTHAM S","Cloud Computing AWS","Internal-I",34,50,68.0%
+27,"GOWTHAM S","Web Technology","Internal-I",45,50,90.0%
+27,"GOWTHAM S","Docker & K8s","Internal-I",31,50,62.0%
+28,"GOWTHAMAN R","Mobile Computing","Internal-I",43,50,86.0%
+28,"GOWTHAMAN R","PCD","Internal-I",43,50,86.0%
+28,"GOWTHAMAN R","Cloud Computing AWS","Internal-I",46,50,92.0%
+28,"GOWTHAMAN R","Web Technology","Internal-I",33,50,66.0%
+28,"GOWTHAMAN R","Docker & K8s","Internal-I",36,50,72.0%
+29,"HARISH R","Mobile Computing","Internal-I",41,50,82.0%
+29,"HARISH R","PCD","Internal-I",44,50,88.0%
+29,"HARISH R","Cloud Computing AWS","Internal-I",40,50,80.0%
+29,"HARISH R","Web Technology","Internal-I",39,50,78.0%
+29,"HARISH R","Docker & K8s","Internal-I",27,50,54.0%
+30,"HARSHINI S","Mobile Computing","Internal-I",48,50,96.0%
+30,"HARSHINI S","PCD","Internal-I",32,50,64.0%
+30,"HARSHINI S","Cloud Computing AWS","Internal-I",47,50,94.0%
+30,"HARSHINI S","Web Technology","Internal-I",46,50,92.0%
+30,"HARSHINI S","Docker & K8s","Internal-I",28,50,56.0%
+31,"HEMADHARSHINI J","Mobile Computing","Internal-I",42,50,84.0%
+31,"HEMADHARSHINI J","PCD","Internal-I",42,50,84.0%
+31,"HEMADHARSHINI J","Cloud Computing AWS","Internal-I",46,50,92.0%
+31,"HEMADHARSHINI J","Web Technology","Internal-I",42,50,84.0%
+31,"HEMADHARSHINI J","Docker & K8s","Internal-I",40,50,80.0%
+32,"JAGANATHAN R","Mobile Computing","Internal-I",45,50,90.0%
+32,"JAGANATHAN R","PCD","Internal-I",44,50,88.0%
+32,"JAGANATHAN R","Cloud Computing AWS","Internal-I",40,50,80.0%
+32,"JAGANATHAN R","Web Technology","Internal-I",30,50,60.0%
+32,"JAGANATHAN R","Docker & K8s","Internal-I",25,50,50.0%
+33,"JANANI M","Mobile Computing","Internal-I",48,50,96.0%
+33,"JANANI M","PCD","Internal-I",45,50,90.0%
+33,"JANANI M","Cloud Computing AWS","Internal-I",44,50,88.0%
+33,"JANANI M","Web Technology","Internal-I",47,50,94.0%
+33,"JANANI M","Docker & K8s","Internal-I",40,50,80.0%
+34,"JEEVITHA D","Mobile Computing","Internal-I",43,50,86.0%
+34,"JEEVITHA D","PCD","Internal-I",42,50,84.0%
+34,"JEEVITHA D","Cloud Computing AWS","Internal-I",46,50,92.0%
+34,"JEEVITHA D","Web Technology","Internal-I",43,50,86.0%
+34,"JEEVITHA D","Docker & K8s","Internal-I",32,50,64.0%
+35,"KALPANA C","Mobile Computing","Internal-I",48,50,96.0%
+35,"KALPANA C","PCD","Internal-I",44,50,88.0%
+35,"KALPANA C","Cloud Computing AWS","Internal-I",49,50,98.0%
+35,"KALPANA C","Web Technology","Internal-I",42,50,84.0%
+35,"KALPANA C","Docker & K8s","Internal-I",39,50,78.0%
+36,"KANAGARAJAN M","Mobile Computing","Internal-I",AB,50,0.0%
+36,"KANAGARAJAN M","PCD","Internal-I",AB,50,0.0%
+36,"KANAGARAJAN M","Cloud Computing AWS","Internal-I",AB,50,0.0%
+36,"KANAGARAJAN M","Web Technology","Internal-I",AB,50,0.0%
+36,"KANAGARAJAN M","Docker & K8s","Internal-I",AB,50,0.0%
+37,"KANMANI E","Mobile Computing","Internal-I",48,50,96.0%
+37,"KANMANI E","PCD","Internal-I",43,50,86.0%
+37,"KANMANI E","Cloud Computing AWS","Internal-I",49,50,98.0%
+37,"KANMANI E","Web Technology","Internal-I",44,50,88.0%
+37,"KANMANI E","Docker & K8s","Internal-I",41,50,82.0%
+38,"KARSHIN M","Mobile Computing","Internal-I",47,50,94.0%
+38,"KARSHIN M","PCD","Internal-I",38,50,76.0%
+38,"KARSHIN M","Cloud Computing AWS","Internal-I",46,50,92.0%
+38,"KARSHIN M","Web Technology","Internal-I",44,50,88.0%
+38,"KARSHIN M","Docker & K8s","Internal-I",41,50,82.0%
+39,"KAVINKARTHIK V","Mobile Computing","Internal-I",38,50,76.0%
+39,"KAVINKARTHIK V","PCD","Internal-I",35,50,70.0%
+39,"KAVINKARTHIK V","Cloud Computing AWS","Internal-I",AB,50,0.0%
+39,"KAVINKARTHIK V","Web Technology","Internal-I",11,50,22.0%
+39,"KAVINKARTHIK V","Docker & K8s","Internal-I",20,50,40.0%
+40,"KAVIYA M","Mobile Computing","Internal-I",40,50,80.0%
+40,"KAVIYA M","PCD","Internal-I",45,50,90.0%
+40,"KAVIYA M","Cloud Computing AWS","Internal-I",45,50,90.0%
+40,"KAVIYA M","Web Technology","Internal-I",44,50,88.0%
+40,"KAVIYA M","Docker & K8s","Internal-I",34,50,68.0%
+41,"KEERTHIKA M","Mobile Computing","Internal-I",47,50,94.0%
+41,"KEERTHIKA M","PCD","Internal-I",46,50,92.0%
+41,"KEERTHIKA M","Cloud Computing AWS","Internal-I",45,50,90.0%
+41,"KEERTHIKA M","Web Technology","Internal-I",47,50,94.0%
+41,"KEERTHIKA M","Docker & K8s","Internal-I",34,50,68.0%
+42,"KISHORE K","Mobile Computing","Internal-I",42,50,84.0%
+42,"KISHORE K","PCD","Internal-I",42,50,84.0%
+42,"KISHORE K","Cloud Computing AWS","Internal-I",36,50,72.0%
+42,"KISHORE K","Web Technology","Internal-I",39,50,78.0%
+42,"KISHORE K","Docker & K8s","Internal-I",37,50,74.0%
+43,"KISHORI D S","Mobile Computing","Internal-I",48,50,96.0%
+43,"KISHORI D S","PCD","Internal-I",37,50,74.0%
+43,"KISHORI D S","Cloud Computing AWS","Internal-I",48,50,96.0%
+43,"KISHORI D S","Web Technology","Internal-I",44,50,88.0%
+43,"KISHORI D S","Docker & K8s","Internal-I",38,50,76.0%
+44,"KOWSALYA C","Mobile Computing","Internal-I",47,50,94.0%
+44,"KOWSALYA C","PCD","Internal-I",45,50,90.0%
+44,"KOWSALYA C","Cloud Computing AWS","Internal-I",48,50,96.0%
+44,"KOWSALYA C","Web Technology","Internal-I",39,50,78.0%
+44,"KOWSALYA C","Docker & K8s","Internal-I",42,50,84.0%
+45,"KRISHNAVEL M","Mobile Computing","Internal-I",42,50,84.0%
+45,"KRISHNAVEL M","PCD","Internal-I",41,50,82.0%
+45,"KRISHNAVEL M","Cloud Computing AWS","Internal-I",AB,50,0.0%
+45,"KRISHNAVEL M","Web Technology","Internal-I",AB,50,0.0%
+45,"KRISHNAVEL M","Docker & K8s","Internal-I",AB,50,0.0%
+46,"LEKHA SRI K","Mobile Computing","Internal-I",47,50,94.0%
+46,"LEKHA SRI K","PCD","Internal-I",44,50,88.0%
+46,"LEKHA SRI K","Cloud Computing AWS","Internal-I",36,50,72.0%
+46,"LEKHA SRI K","Web Technology","Internal-I",47,50,94.0%
+46,"LEKHA SRI K","Docker & K8s","Internal-I",40,50,80.0%
+47,"LITHIYASRI B S","Mobile Computing","Internal-I",48,50,96.0%
+47,"LITHIYASRI B S","PCD","Internal-I",44,50,88.0%
+47,"LITHIYASRI B S","Cloud Computing AWS","Internal-I",49,50,98.0%
+47,"LITHIYASRI B S","Web Technology","Internal-I",48,50,96.0%
+47,"LITHIYASRI B S","Docker & K8s","Internal-I",41,50,82.0%
+48,"MAHALAKSHMI S","Mobile Computing","Internal-I",48,50,96.0%
+48,"MAHALAKSHMI S","PCD","Internal-I",45,50,90.0%
+48,"MAHALAKSHMI S","Cloud Computing AWS","Internal-I",48,50,96.0%
+48,"MAHALAKSHMI S","Web Technology","Internal-I",46,50,92.0%
+48,"MAHALAKSHMI S","Docker & K8s","Internal-I",41,50,82.0%
+49,"MAHALAXMI S","Mobile Computing","Internal-I",48,50,96.0%
+49,"MAHALAXMI S","PCD","Internal-I",39,50,78.0%
+49,"MAHALAXMI S","Cloud Computing AWS","Internal-I",48,50,96.0%
+49,"MAHALAXMI S","Web Technology","Internal-I",44,50,88.0%
+49,"MAHALAXMI S","Docker & K8s","Internal-I",39,50,78.0%
+50,"MAHENDRAN V","Mobile Computing","Internal-I",40,50,80.0%
+50,"MAHENDRAN V","PCD","Internal-I",AB,50,0.0%
+50,"MAHENDRAN V","Cloud Computing AWS","Internal-I",37,50,74.0%
+50,"MAHENDRAN V","Web Technology","Internal-I",45,50,90.0%
+50,"MAHENDRAN V","Docker & K8s","Internal-I",35,50,70.0%
+51,"MANISHA M","Mobile Computing","Internal-I",47,50,94.0%
+51,"MANISHA M","PCD","Internal-I",44,50,88.0%
+51,"MANISHA M","Cloud Computing AWS","Internal-I",46,50,92.0%
+51,"MANISHA M","Web Technology","Internal-I",48,50,96.0%
+51,"MANISHA M","Docker & K8s","Internal-I",42,50,84.0%
+52,"MANOJ KUMAR S","Mobile Computing","Internal-I",34,50,68.0%
+52,"MANOJ KUMAR S","PCD","Internal-I",45,50,90.0%
+52,"MANOJ KUMAR S","Cloud Computing AWS","Internal-I",46,50,92.0%
+52,"MANOJ KUMAR S","Web Technology","Internal-I",48,50,96.0%
+52,"MANOJ KUMAR S","Docker & K8s","Internal-I",39,50,78.0%
+53,"MEGAVARSINI S","Mobile Computing","Internal-I",48,50,96.0%
+53,"MEGAVARSINI S","PCD","Internal-I",44,50,88.0%
+53,"MEGAVARSINI S","Cloud Computing AWS","Internal-I",48,50,96.0%
+53,"MEGAVARSINI S","Web Technology","Internal-I",48,50,96.0%
+53,"MEGAVARSINI S","Docker & K8s","Internal-I",41,50,82.0%
+54,"MEHENDHI J","Mobile Computing","Internal-I",48,50,96.0%
+54,"MEHENDHI J","PCD","Internal-I",43,50,86.0%
+54,"MEHENDHI J","Cloud Computing AWS","Internal-I",47,50,94.0%
+54,"MEHENDHI J","Web Technology","Internal-I",46,50,92.0%
+54,"MEHENDHI J","Docker & K8s","Internal-I",39,50,78.0%
+55,"MEKHA M","Mobile Computing","Internal-I",47,50,94.0%
+55,"MEKHA M","PCD","Internal-I",45,50,90.0%
+55,"MEKHA M","Cloud Computing AWS","Internal-I",47,50,94.0%
+55,"MEKHA M","Web Technology","Internal-I",46,50,92.0%
+55,"MEKHA M","Docker & K8s","Internal-I",34,50,68.0%
+56,"MIRUTHULA N","Mobile Computing","Internal-I",47,50,94.0%
+56,"MIRUTHULA N","PCD","Internal-I",45,50,90.0%
+56,"MIRUTHULA N","Cloud Computing AWS","Internal-I",AB,50,0.0%
+56,"MIRUTHULA N","Web Technology","Internal-I",44,50,88.0%
+56,"MIRUTHULA N","Docker & K8s","Internal-I",31,50,62.0%
+57,"MOHAN SANJAY S","Mobile Computing","Internal-I",40,50,80.0%
+57,"MOHAN SANJAY S","PCD","Internal-I",40,50,80.0%
+57,"MOHAN SANJAY S","Cloud Computing AWS","Internal-I",37,50,74.0%
+57,"MOHAN SANJAY S","Web Technology","Internal-I",38,50,76.0%
+57,"MOHAN SANJAY S","Docker & K8s","Internal-I",33,50,66.0%
+58,"MONESH G","Mobile Computing","Internal-I",42,50,84.0%
+58,"MONESH G","PCD","Internal-I",45,50,90.0%
+58,"MONESH G","Cloud Computing AWS","Internal-I",45,50,90.0%
+58,"MONESH G","Web Technology","Internal-I",33,50,66.0%
+58,"MONESH G","Docker & K8s","Internal-I",37,50,74.0%
+59,"MONIKA S","Mobile Computing","Internal-I",47,50,94.0%
+59,"MONIKA S","PCD","Internal-I",43,50,86.0%
+59,"MONIKA S","Cloud Computing AWS","Internal-I",43,50,86.0%
+59,"MONIKA S","Web Technology","Internal-I",39,50,78.0%
+59,"MONIKA S","Docker & K8s","Internal-I",38,50,76.0%
+60,"MONISHA R","Mobile Computing","Internal-I",45,50,90.0%
+60,"MONISHA R","PCD","Internal-I",40,50,80.0%
+60,"MONISHA R","Cloud Computing AWS","Internal-I",45,50,90.0%
+60,"MONISHA R","Web Technology","Internal-I",48,50,96.0%
+60,"MONISHA R","Docker & K8s","Internal-I",43,50,86.0%
+61,"MUKESHKANNA S","Mobile Computing","Internal-I",AB,50,0.0%
+61,"MUKESHKANNA S","PCD","Internal-I",46,50,92.0%
+61,"MUKESHKANNA S","Cloud Computing AWS","Internal-I",41,50,82.0%
+61,"MUKESHKANNA S","Web Technology","Internal-I",42,50,84.0%
+61,"MUKESHKANNA S","Docker & K8s","Internal-I",28,50,56.0%
+62,"NAGAVIKASH M","Mobile Computing","Internal-I",44,50,88.0%
+62,"NAGAVIKASH M","PCD","Internal-I",45,50,90.0%
+62,"NAGAVIKASH M","Cloud Computing AWS","Internal-I",44,50,88.0%
+62,"NAGAVIKASH M","Web Technology","Internal-I",43,50,86.0%
+62,"NAGAVIKASH M","Docker & K8s","Internal-I",37,50,74.0%

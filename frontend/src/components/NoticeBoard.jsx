@@ -96,7 +96,7 @@ const NoticeBoard = () => {
             {/* Header */}
             <div className="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="flex items-center gap-2"><Bell size={22} style={{ color: 'var(--primary)' }} /> Notice Board</h1>
+                    <h1 className="flex items-center gap-2"><Bell size={22} className="text-[#f59e0b]" /> Notice Board</h1>
                     <p>Stay updated with the latest institutional announcements.</p>
                 </div>
                 {canPost && (
