@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -88,6 +89,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/api/assignments/preview/**", "/api/assignments/download/**");
+    }
+
+    @Bean
     public AuthTokenFilter authenticationJwtTokenFilter(JwtUtils jwtUtils,
             CustomUserDetailsService userDetailsService) {
         return new AuthTokenFilter(jwtUtils, userDetailsService);
@@ -104,6 +110,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/files/**").permitAll()
+                        .requestMatchers("/api/assignments/preview/**").permitAll()
+                        .requestMatchers("/api/assignments/download/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/profile/avatar/**").permitAll()
                         .requestMatchers("/api/announcements/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers("/error").permitAll()
@@ -112,7 +120,7 @@ public class SecurityConfig {
         http.authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(authenticationJwtTokenFilter(jwtUtils, userDetailsService),
-                org.springframework.security.web.access.intercept.AuthorizationFilter.class);
+                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

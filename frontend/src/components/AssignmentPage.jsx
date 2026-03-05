@@ -15,6 +15,9 @@ const AssignmentPage = () => {
     const [showSubmitForm, setShowSubmitForm] = useState(null);
     const [taskForm, setTaskForm] = useState({ subject: '', title: '', description: '', deadline: '' });
     const [file, setFile] = useState(null);
+    const [textContent, setTextContent] = useState('');
+    const [submissionType, setSubmissionType] = useState('FILE');
+    const [previewing, setPreviewing] = useState(null);
     const [msg, setMsg] = useState('');
     const [grading, setGrading] = useState(null);
     const [gradeForm, setGradeForm] = useState({ grade: '', feedback: '' });
@@ -70,11 +73,27 @@ const AssignmentPage = () => {
             const fd = new FormData();
             fd.append('studentId', user.id);
             fd.append('taskId', showSubmitForm);
-            if (file) fd.append('file', file);
+            fd.append('submissionType', submissionType);
+
+            if (submissionType === 'FILE') {
+                if (!file) {
+                    setMsg('❌ Please select a file.');
+                    return;
+                }
+                fd.append('file', file);
+            } else {
+                if (!textContent.trim()) {
+                    setMsg('❌ Please type your answer.');
+                    return;
+                }
+                fd.append('content', textContent);
+            }
+
             await AssignmentService.submitAssignment(fd);
             setMsg('✅ Assignment submitted successfully.');
             setShowSubmitForm(null);
             setFile(null);
+            setTextContent('');
             fetchData();
             setTimeout(() => setMsg(''), 3000);
         } catch (err) { setMsg('❌ Failed to submit assignment.'); }
@@ -220,11 +239,28 @@ const AssignmentPage = () => {
 
                                             {showSubmitForm === t.id && (
                                                 <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmitSubmission}
-                                                    className="p-3 rounded-xl border border-dashed border-primary/30 space-y-3" style={{ background: 'var(--bg-elevated)' }}>
-                                                    <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-primary/10 file:text-primary file:font-bold" />
+                                                    className="p-4 rounded-xl border border-dashed border-primary/30 space-y-4" style={{ background: 'var(--bg-elevated)' }}>
+
+                                                    <div className="flex bg-surface p-1 rounded-lg border border-border">
+                                                        <button type="button" onClick={() => setSubmissionType('FILE')} className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'FILE' ? 'bg-primary text-white shadow-sm' : 'opacity-50'}`}>File Upload</button>
+                                                        <button type="button" onClick={() => setSubmissionType('TEXT')} className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'TEXT' ? 'bg-primary text-white shadow-sm' : 'opacity-50'}`}>Text Editor</button>
+                                                    </div>
+
+                                                    {submissionType === 'FILE' ? (
+                                                        <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-primary/10 file:text-primary file:font-bold" />
+                                                    ) : (
+                                                        <textarea
+                                                            required
+                                                            placeholder="Type your answer here..."
+                                                            value={textContent}
+                                                            onChange={e => setTextContent(e.target.value)}
+                                                            className="w-full p-3 rounded-lg bg-surface border border-border text-xs min-h-[150px] font-mono focus:border-primary outline-none transition-all"
+                                                        />
+                                                    )}
+
                                                     <div className="flex gap-2">
-                                                        <button type="submit" className="btn-primary flex-1 text-xs py-1.5 !rounded-lg">Upload</button>
-                                                        <button type="button" onClick={() => setShowSubmitForm(null)} className="p-1.5 rounded-lg border transition-colors hover:bg-primary/10" style={{ borderColor: 'var(--border)', background: 'var(--bg-surface)' }}><X size={14} /></button>
+                                                        <button type="submit" className="btn-primary flex-1 text-xs py-2 !rounded-lg">Submit Assignment</button>
+                                                        <button type="button" onClick={() => { setShowSubmitForm(null); setFile(null); setTextContent(''); }} className="p-2 rounded-lg border transition-colors hover:bg-primary/10" style={{ borderColor: 'var(--border)', background: 'var(--bg-surface)' }}><X size={16} /></button>
                                                     </div>
                                                 </motion.form>
                                             )}
@@ -271,7 +307,7 @@ const AssignmentPage = () => {
                                             </div>
                                             <div className="flex items-center gap-3 text-[10px] font-bold opacity-60">
                                                 <span className="flex items-center gap-1.5 text-primary"><BookOpen size={12} /> {s.title}</span>
-                                                <span className="flex items-center gap-1.5"><Paperclip size={12} /> {s.fileName || 'Archive.zip'}</span>
+                                                <span className="flex items-center gap-1.5"><Paperclip size={12} /> {s.submissionType === 'TEXT' ? 'Direct Text' : (s.fileName || 'Archive.zip')}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -289,9 +325,14 @@ const AssignmentPage = () => {
                                                     <button onClick={() => setGrading(null)} className="p-1.5 rounded-lg border transition-colors hover:bg-primary/10" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}><X size={16} /></button>
                                                 </div>
                                             ) : (
-                                                <button onClick={() => setGrading(s.id)} className="btn-primary !py-2 !px-6 text-xs flex items-center gap-2">
-                                                    <TrendingUp size={14} /> Grade Work
-                                                </button>
+                                                <div className="flex gap-2 w-full sm:w-auto">
+                                                    <button onClick={() => setPreviewing(s)} className="p-2 px-4 rounded-xl border border-primary/30 text-primary text-xs font-bold hover:bg-primary/5 transition-all flex items-center gap-2">
+                                                        <FileText size={14} /> View
+                                                    </button>
+                                                    <button onClick={() => setGrading(s.id)} className="btn-primary !py-2 !px-6 text-xs flex items-center gap-2">
+                                                        <TrendingUp size={14} /> Grade
+                                                    </button>
+                                                </div>
                                             )
                                         ) : (
                                             <div className="flex items-center gap-5 bg-success-dim border border-success/20 px-5 py-2.5 rounded-2xl">
@@ -355,6 +396,57 @@ const AssignmentPage = () => {
                     )}
                 </div>
             )}
+
+            {/* Preview Modal */}
+            <AnimatePresence>
+                {previewing && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPreviewing(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-4xl bg-base rounded-3xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: '90vh' }}>
+                            <div className="p-6 border-b flex justify-between items-center bg-surface">
+                                <div>
+                                    <h2 className="text-lg font-black tracking-tight">{previewing.title}</h2>
+                                    <p className="text-xs opacity-60 font-bold uppercase tracking-widest">{previewing.student?.name} • {previewing.submissionType}</p>
+                                </div>
+                                <button onClick={() => setPreviewing(null)} className="p-2 rounded-full hover:bg-primary/10 transition-colors"><X size={20} /></button>
+                            </div>
+                            <div className="flex-1 overflow-auto p-8">
+                                {previewing.submissionType === 'TEXT' ? (
+                                    <div className="p-10 rounded-2xl bg-surface border border-white/5 shadow-inner min-h-full">
+                                        <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed opacity-80">{previewing.content}</pre>
+                                    </div>
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center min-h-[500px]">
+                                        <div className="mb-6 p-6 rounded-3xl bg-primary/5 border border-dashed border-primary/20 text-center">
+                                            <Paperclip size={48} className="text-primary mx-auto mb-4 opacity-50" />
+                                            <p className="font-bold text-sm mb-1">{previewing.fileName}</p>
+                                            <p className="text-[10px] opacity-50 uppercase tracking-widest">Digital Attachment</p>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <a
+                                                href={`${AssignmentService.getPreviewUrl(previewing.id)}?token=${encodeURIComponent(user.token)}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="btn-primary !px-8 py-3 flex items-center gap-2 shadow-xl shadow-primary/20"
+                                            >
+                                                <BookOpen size={18} /> Open in Browser
+                                            </a>
+                                            <a
+                                                href={`${AssignmentService.getPreviewUrl(previewing.id).replace('preview', 'download')}?token=${encodeURIComponent(user.token)}`}
+                                                className="p-3 px-8 rounded-2xl border border-primary/30 text-primary font-bold hover:bg-primary/5 transition-all flex items-center gap-2"
+                                            >
+                                                <Download size={18} /> Download
+                                            </a>
+                                        </div>
+                                        <p className="mt-8 text-[10px] opacity-40 max-w-xs text-center">Note: Browser preview support depends on file type (PDF and Images are supported). Other files will be downloaded automatically.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

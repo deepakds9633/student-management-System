@@ -151,9 +151,7 @@ const AttendanceComponent = () => {
                     <h1 className="flex items-center gap-2">
                         <Calendar size={28} style={{ color: 'var(--primary)' }} /> My Attendance
                     </h1>
-                    <p className="mt-1 text-sm opacity-80 max-w-3xl">
-                        A real-time, dynamic academic tracking system. This platform integrates live data synchronization, analytics, and performance alerts to provide an enterprise-grade solution for accurate and transparent attendance monitoring.
-                    </p>
+
                 </div>
 
                 {loading && myAttendance.length === 0 ? (
@@ -305,9 +303,7 @@ const AttendanceComponent = () => {
                     <h1 className="flex items-center gap-2">
                         <Users size={28} style={{ color: 'var(--primary)' }} /> Class Attendance Control
                     </h1>
-                    <p className="mt-1 text-sm opacity-80 max-w-3xl">
-                        A real-time, dynamic academic tracking system where faculty and administrators can record attendance. Instantly synchronizes with the student dashboard ensuring automated, transparent, and enterprise-grade monitoring.
-                    </p>
+
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex flex-col">

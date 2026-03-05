@@ -25,6 +25,9 @@ const AssignmentService = {
     // Grading
     gradeAssignment: (id, data) => axios.put(`${API_URL}/${id}/grade`, data, { headers: getHeaders() }),
 
+    // Preview
+    getPreviewUrl: (id) => `${API_URL}/preview/${id}`,
+
     // Reports
     getAnalytics: () => axios.get(`${API_URL}/analytics`, { headers: getHeaders() })
 };

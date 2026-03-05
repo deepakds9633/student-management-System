@@ -111,6 +111,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     if (isStaff) {
         academicNav.push({ path: '/students', label: 'Students', icon: <Users size={18} /> });
+        academicNav.push({ path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> });
         academicNav.push({ path: '/user-management', label: 'User Management', icon: <UserCog size={18} /> });
     }
 

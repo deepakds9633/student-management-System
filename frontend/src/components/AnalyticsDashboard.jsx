@@ -71,18 +71,25 @@ const AnalyticsDashboard = () => {
                         <h1 className="text-3xl font-black tracking-tighter flex items-center gap-3">
                             <Activity className="text-primary" size={32} /> Central Intelligence
                         </h1>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Enterprise Analytics & Performance Control</p>
-                        <p className="mt-2 text-sm opacity-80 max-w-2xl text-[var(--text-secondary)]">
-                            Designed with enhanced readability and accessibility. Supports dynamic theming and responsive visual components, ensuring academic insights are clearly visible across light and dark modes.
-                        </p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 mt-1">Enterprise Analytics & Performance Control</p>
                     </div>
-                    <div className="flex items-center gap-3 p-1 rounded-2xl shadow-sm border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+                    <div className="flex items-center gap-1 p-1 rounded-2xl border relative"
+                        style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-strong)', boxShadow: 'var(--shadow-sm)' }}>
                         {tabs.map(t => (
                             <button key={t.id} onClick={() => setActiveTab(t.id)}
-                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2
-                                ${activeTab === t.id ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-[1.02]' : 'opacity-40 hover:opacity-100'}`}
-                                style={activeTab !== t.id ? { background: 'var(--bg-surface)' } : {}}>
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2.5 relative z-10
+                                ${activeTab === t.id
+                                        ? 'text-white'
+                                        : 'text-[var(--text-primary)] hover:text-primary opacity-70 hover:opacity-100'}`}
+                            >
                                 {t.icon} {t.l}
+                                {activeTab === t.id && (
+                                    <motion.div
+                                        layoutId="activeTabIndicator"
+                                        className="absolute inset-0 bg-primary rounded-xl -z-10 shadow-lg shadow-primary/30"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
                             </button>
                         ))}
                     </div>
@@ -98,7 +105,7 @@ const AnalyticsDashboard = () => {
                                         <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-5 group-hover:scale-150 transition-transform duration-700 bg-${s.c}`} />
                                         <div className="flex items-center justify-between relative z-10">
                                             <div>
-                                                <p className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-1">{s.t}</p>
+                                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">{s.t}</p>
                                                 <h4 className="text-2xl font-black tabular-nums">{s.v}</h4>
                                             </div>
                                             <div className={`w-12 h-12 rounded-2xl bg-${s.c}/10 text-${s.c} flex items-center justify-center shadow-inner`}>
@@ -114,7 +121,7 @@ const AnalyticsDashboard = () => {
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
                                             <h3 className="text-lg font-black tracking-tight">Institutional Yield Growth</h3>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Annual Performance Vector</p>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Annual Performance Vector</p>
                                         </div>
                                         <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
                                             <TrendingUp size={20} />
@@ -169,7 +176,7 @@ const AnalyticsDashboard = () => {
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b" style={{ borderColor: 'var(--border)' }}>
                                     <div>
                                         <h2 className="text-xl font-black tracking-tight">Engagement Latency</h2>
-                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Real-time attendance vector mapping</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Real-time attendance vector mapping</p>
                                     </div>
                                     <div className="flex p-1 rounded-xl border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                                         {['weekly', 'monthly'].map(p => (
@@ -218,7 +225,7 @@ const AnalyticsDashboard = () => {
                             <div className="md-card p-10 bg-gradient-to-br from-primary/5 via-transparent to-accent/5">
                                 <div className="text-center mb-12">
                                     <h2 className="text-2xl font-black tracking-tight mb-2">Subject Performance Matrix</h2>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Normalized class distribution</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Normalized class distribution</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -230,13 +237,13 @@ const AnalyticsDashboard = () => {
                                                     {st.percentage}%
                                                 </div>
                                                 <h3 className="text-lg font-black tracking-tight mb-1">{st.subject}</h3>
-                                                <p className="text-[9px] font-black uppercase opacity-30 tracking-widest mb-6">{st.totalStudents} verified records</p>
+                                                <p className="text-[9px] font-black uppercase opacity-60 tracking-widest mb-6">{st.totalStudents} verified records</p>
 
                                                 <div className="w-full h-3 rounded-full overflow-hidden mb-4 p-0.5 border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
                                                     <motion.div initial={{ width: 0 }} animate={{ width: `${st.percentage}%` }} transition={{ duration: 1.2, delay: i * 0.1 }}
                                                         className={`h-full bg-${c} rounded-full shadow-lg shadow-${c}/20`} />
                                                 </div>
-                                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest opacity-40 tabular-nums">
+                                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest opacity-60 tabular-nums">
                                                     <span>Min: {Math.round(st.average * 0.7)}</span>
                                                     <span>Avg: {st.average}</span>
                                                     <span>Max: {st.maxMarks}</span>
@@ -248,7 +255,7 @@ const AnalyticsDashboard = () => {
 
                                 <div className="mt-16 rounded-[2.5rem] p-10 shadow-2xl border text-center relative overflow-hidden group" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
                                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 block mb-3 relative z-10">Global Institutional Average</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 block mb-3 relative z-10">Global Institutional Average</span>
                                     <span className="text-6xl font-black text-primary tabular-nums tracking-tighter relative z-10">
                                         {marksSummary.classAverage}<span className="text-2xl text-slate-300 ml-1 font-bold">%</span>
                                     </span>
@@ -261,33 +268,6 @@ const AnalyticsDashboard = () => {
                     {activeTab === 'performers' && marksSummary && (
                         <motion.div key="performers" initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
 
-                            <div className="md-card p-6 border-l-4 overflow-hidden relative" style={{ borderColor: 'var(--primary)', background: 'var(--primary-dim)' }}>
-                                <div className="absolute top-0 right-0 p-8 opacity-10 blur-xl">
-                                    <Target size={120} style={{ color: 'var(--primary)' }} />
-                                </div>
-                                <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start">
-                                    <div className="p-4 rounded-xl shadow-sm flex-shrink-0" style={{ background: 'var(--bg-surface)' }}>
-                                        <TrendingUp size={32} className="text-primary" />
-                                    </div>
-                                    <div className="space-y-4">
-                                        <h2 className="text-lg font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Dynamic Academic Intelligence</h2>
-                                        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                                            The Analytics module has been enhanced with an intelligent academic performance monitoring system that dynamically identifies both high-performing and underperforming students based on real-time marks data. This feature provides administrators and faculty with actionable insights to support data-driven academic decision-making.
-                                        </p>
-                                        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                                            The system automatically analyzes student performance across subjects and assessments, and displays the Top 5 students with the highest scores and the Bottom 5 students with the lowest scores in a dedicated analytics section. The results are presented in a clear and visually engaging dashboard with ranking, student name, register number, average marks, and performance trends.
-                                        </p>
-                                        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                                            This functionality enables early identification of students who require academic support while also recognizing top performers. It improves institutional productivity, enhances learning outcomes, and supports personalized mentoring. The feature is fully dynamic, meaning that the rankings update automatically whenever new marks are entered by faculty.
-                                        </p>
-                                        <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
-                                            <p className="text-xs font-bold font-mono tracking-widest uppercase" style={{ color: 'var(--primary)' }}>
-                                                Enterprise-grade UI standards • Adaptive light and dark theme support • Real-time data updates
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 {[{ title: 'Institutional Leadership', data: marksSummary.topPerformers, type: 'leader', c: 'primary' },
@@ -308,8 +288,8 @@ const AnalyticsDashboard = () => {
                                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm tracking-tighter
                                                   ${i === 0 ? 'bg-amber-400 text-white shadow-lg shadow-amber-400/30' :
                                                             i === 1 ? 'bg-slate-400 text-white' :
-                                                                i === 2 ? 'bg-orange-400 text-white' : 'opacity-40'}`}
-                                                        style={i > 2 ? { background: 'var(--bg-elevated)', color: 'var(--text-secondary)' } : {}}>
+                                                                i === 2 ? 'bg-orange-400 text-white' : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border border-[var(--border)]'}`}
+                                                        style={i > 2 ? {} : {}}>
                                                         {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
                                                     </div>
                                                     <div className="flex-1">

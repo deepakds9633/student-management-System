@@ -32,6 +32,12 @@ public class Assignment {
 
     private String filePath;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    private String submissionType; // "FILE", "TEXT"
+
     private LocalDateTime submittedAt;
 
     private String grade; // A, B, C, D, F or numeric

@@ -22,6 +22,7 @@ const AssignmentPage = lazy(() => import('./components/AssignmentPage'));
 const ExportReports = lazy(() => import('./components/ExportReports'));
 const AcademicCalendar = lazy(() => import('./components/AcademicCalendar'));
 const SettingsPage = lazy(() => import('./components/SettingsPage'));
+const AnalyticsDashboard = lazy(() => import('./components/AnalyticsDashboard'));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -47,6 +48,7 @@ function App() {
               <Route path='/attendance' element={<AttendanceComponent />} />
               <Route path='/marks' element={<MarkComponent />} />
               <Route path='/reports' element={<ReportsComponent />} />
+              <Route path='/analytics' element={<AnalyticsDashboard />} />
               <Route path='/user-management' element={<UserManagementSystem />} />
               <Route path='/leaves' element={<LeaveManagement />} />
               <Route path='/notices' element={<NoticeBoard />} />

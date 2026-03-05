@@ -63,6 +63,8 @@ public class AssignmentController {
             @RequestParam(value = "studentId", required = false) Long studentId,
             @RequestParam("taskId") @org.springframework.lang.NonNull Long taskId,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "submissionType", required = false, defaultValue = "FILE") String submissionType,
             Principal principal) {
 
         AssignmentTask task = assignmentTaskRepository.findById(taskId).orElse(null);
@@ -92,9 +94,10 @@ public class AssignmentController {
         assignment.setSubject(task.getSubject());
         assignment.setTitle(task.getTitle());
         assignment.setSubmittedAt(LocalDateTime.now());
+        assignment.setSubmissionType(submissionType);
         assignment.setStatus("SUBMITTED");
 
-        if (file != null && !file.isEmpty()) {
+        if ("FILE".equalsIgnoreCase(submissionType) && file != null && !file.isEmpty()) {
             try {
                 Path uploadPath = Paths.get(UPLOAD_DIR);
                 if (!Files.exists(uploadPath)) {
@@ -110,6 +113,9 @@ public class AssignmentController {
             } catch (IOException e) {
                 return ResponseEntity.badRequest().body(Map.of("message", "File upload failed: " + e.getMessage()));
             }
+        } else if ("TEXT".equalsIgnoreCase(submissionType)) {
+            assignment.setContent(content);
+            assignment.setFileName("Text Submission");
         }
 
         Assignment saved = assignmentRepository.save(assignment);
@@ -125,6 +131,91 @@ public class AssignmentController {
         notificationRepository.save(n);
 
         return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<?> downloadAssignment(@PathVariable("id") Long id,
+            @RequestParam(value = "token", required = false) String token) {
+        System.out.println("DEBUG: Entering downloadAssignment for ID: " + id + " with token: "
+                + (token != null ? "PRESENT" : "NULL"));
+        if (id == null)
+            return ResponseEntity.badRequest().build();
+        Assignment assignment = assignmentRepository.findById(id).orElse(null);
+        if (assignment == null || (assignment.getFilePath() == null && assignment.getContent() == null)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if ("TEXT".equalsIgnoreCase(assignment.getSubmissionType())) {
+            String content = assignment.getContent();
+            if (content == null)
+                content = "";
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.TEXT_PLAIN)
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"submission.txt\"")
+                    .body(content);
+        }
+
+        try {
+            File file = new File(assignment.getFilePath());
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            Path path = file.toPath();
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(path.toUri());
+            String cType = Files.probeContentType(path);
+            org.springframework.http.MediaType mediaType = cType != null
+                    ? org.springframework.http.MediaType.parseMediaType(cType)
+                    : org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + assignment.getFileName() + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/preview/{id}")
+    public ResponseEntity<?> previewAssignment(@PathVariable("id") Long id,
+            @RequestParam(value = "token", required = false) String token) {
+        System.out.println("DEBUG: Entering previewAssignment for ID: " + id + " with token: "
+                + (token != null ? "PRESENT" : "NULL"));
+        if (id == null)
+            return ResponseEntity.badRequest().build();
+        Assignment assignment = assignmentRepository.findById(id).orElse(null);
+        if (assignment == null || (assignment.getFilePath() == null && assignment.getContent() == null)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if ("TEXT".equalsIgnoreCase(assignment.getSubmissionType())) {
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.TEXT_PLAIN)
+                    .body(assignment.getContent());
+        }
+
+        try {
+            File file = new File(assignment.getFilePath());
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            Path path = file.toPath();
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(path.toUri());
+            String cType = Files.probeContentType(path);
+            org.springframework.http.MediaType mediaType = cType != null
+                    ? org.springframework.http.MediaType.parseMediaType(cType)
+                    : org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + assignment.getFileName() + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/student/{studentId}")

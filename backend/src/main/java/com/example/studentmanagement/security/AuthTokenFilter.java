@@ -38,18 +38,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             @org.springframework.lang.NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            System.out.println("DEBUG: Filter processing URI: " + request.getRequestURI());
+            String uri = request.getRequestURI();
+            System.out.println("DEBUG: Filter processing URI: " + uri);
             String jwt = parseJwt(request);
+
             if (jwt != null) {
+                System.out.println("DEBUG: JWT found: " + (jwt.length() > 20 ? jwt.substring(0, 20) + "..." : jwt));
                 boolean valid = jwtUtils.validateJwtToken(jwt);
-                logger.error("DEBUG: JWT present. Valid? {}", valid);
+                System.out.println("DEBUG: JWT valid? " + valid);
+
                 if (valid) {
                     String username = jwtUtils.getUserNameFromJwtToken(jwt);
                     System.out.println("DEBUG: JWT Username: " + username);
-                    System.out.println("DEBUG: userDetailsService is " + userDetailsService);
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    logger.error("DEBUG: UserDetails loaded. Authorities: {}", userDetails.getAuthorities());
+                    System.out.println("DEBUG: UserDetails loaded for: " + username + " with authorities: "
+                            + userDetails.getAuthorities());
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
@@ -59,13 +63,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     context.setAuthentication(authentication);
                     SecurityContextHolder.setContext(context);
 
-                    logger.error("DEBUG: Auth set in SecurityContext for user: {}", authentication.getName());
+                    System.out.println("DEBUG: SecurityContext successfully updated for user: " + username);
+                } else {
+                    System.out.println("DEBUG: JWT validation failed.");
                 }
             } else {
-                logger.error("DEBUG: No JWT found in request. Auth Header: {}", request.getHeader("Authorization"));
+                System.out.println("DEBUG: No JWT found in Authorization header or 'token' parameter. URI: " + uri);
+                System.out.println("DEBUG: Auth Header: " + request.getHeader("Authorization"));
+                System.out.println("DEBUG: All Params: " + request.getParameterMap().keySet());
             }
         } catch (Exception e) {
-            System.out.println("Cannot set user authentication: " + e);
+            System.out.println("DEBUG: ERROR in AuthTokenFilter: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -77,6 +85,20 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
+        }
+
+        // Check for token in common query parameters
+        String tokenParam = request.getParameter("token");
+        if (!StringUtils.hasText(tokenParam)) {
+            tokenParam = request.getParameter("authorization");
+        }
+
+        if (StringUtils.hasText(tokenParam)) {
+            tokenParam = tokenParam.trim();
+            if (tokenParam.startsWith("Bearer ")) {
+                return tokenParam.substring(7);
+            }
+            return tokenParam;
         }
 
         return null;
