@@ -197,7 +197,7 @@ const ReportsComponent = () => {
                 <div className="p-8 border-b border-slate-50 dark:border-slate-800/50 flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div>
                         <h3 className="font-black text-lg tracking-tight">Scholastic Leadership</h3>
-                        <p className="text-[10px] font-black uppercase opacity-40 tracking-widest mt-1">Top percentile performance directory</p>
+                        <p className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest mt-1">Top percentile performance directory</p>
                     </div>
                     <div className="relative w-full sm:w-80">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary opacity-40" size={16} />
@@ -222,7 +222,7 @@ const ReportsComponent = () => {
                                 const rank = index + 1;
                                 return (
                                     <tr key={index} className="group cursor-pointer">
-                                        <td className="font-black opacity-40 tabular-nums">#{rank.toString().padStart(2, '0')}</td>
+                                        <td className="font-black text-slate-500 dark:text-slate-400 tabular-nums">#{rank.toString().padStart(2, '0')}</td>
                                         <td>
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-xs text-white shadow-xl"
@@ -231,19 +231,19 @@ const ReportsComponent = () => {
                                                 </div>
                                                 <div>
                                                     <div className="text-sm font-black tracking-tight">{s.studentName}</div>
-                                                    <div className="text-[9px] font-black uppercase opacity-40">Verified Identity</div>
+                                                    <div className="text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Verified Identity</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-black uppercase tracking-widest opacity-60">
+                                            <span className="px-3 py-1 bg-slate-200 dark:bg-slate-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
                                                 {s.course || 'Independent Study'}
                                             </span>
                                         </td>
                                         <td className="text-right">
                                             <div className="flex flex-col items-end">
                                                 <span className="text-base font-black text-primary tabular-nums">{s.percentage}%</span>
-                                                <div className="w-20 h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-1 overflow-hidden">
+                                                <div className="w-20 h-1 bg-slate-200 dark:bg-slate-800 rounded-full mt-1 overflow-hidden">
                                                     <div className="h-full bg-primary" style={{ width: `${s.percentage}%` }} />
                                                 </div>
                                             </div>
