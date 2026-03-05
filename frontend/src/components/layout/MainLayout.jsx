@@ -148,11 +148,11 @@ const MainLayout = ({ children }) => {
                                                     : 'linear-gradient(135deg,#6366f1,#a855f7)'
                                         }}
                                     >
-                                        {user.username?.[0]?.toUpperCase() || 'U'}
+                                        {(user.name || user.username)?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                 )}
-                                <span className="text-xs font-semibold hidden sm:block" style={{ color: 'var(--text-primary)', maxWidth: 72, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {user.username}
+                                <span className="text-xs font-semibold hidden sm:block" style={{ color: 'var(--text-primary)', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {user.name || user.username}
                                 </span>
                             </div>
                         )}

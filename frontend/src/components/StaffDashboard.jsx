@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import AuthService from '../services/AuthService';
-import { Users, ClipboardList, BarChart3, Bell, ChevronRight, BookOpen, Briefcase } from 'lucide-react';
+import { Users, ClipboardList, BarChart3, Bell, ChevronRight, BookOpen, Briefcase, Calendar } from 'lucide-react';
 
 const API = 'http://localhost:8080/api';
 const fadeUp = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 22 } } };
@@ -40,6 +40,7 @@ const StaffDashboard = () => {
     const actions = [
         { icon: <Users size={22} />, label: 'Student Roster', desc: 'Manage all students', color: '#6366f1', to: '/students' },
         { icon: <ClipboardList size={22} />, label: 'Assignments', desc: 'Review & grade work', color: '#10b981', to: '/assignments' },
+        { icon: <Calendar size={22} />, label: 'Academic Calendar', desc: 'Institutional schedule', color: '#8b5cf6', to: '/calendar' },
         { icon: <BarChart3 size={22} />, label: 'Analytics', desc: 'Performance insights', color: '#06b6d4', to: '/analytics' },
         { icon: <Bell size={22} />, label: 'Notices', desc: 'Post announcements', color: '#f59e0b', to: '/notices' },
     ];

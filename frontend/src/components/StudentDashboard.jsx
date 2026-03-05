@@ -190,7 +190,7 @@ const StudentDashboard = () => {
                             <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.55)' }}>Intelligent Student Portal</span>
                         </div>
                         <h1 className="text-2xl sm:text-3xl font-black text-white mb-2">
-                            {greeting.text}, {user?.username}! {greeting.emoji}
+                            {greeting.text}, {user?.name || user?.username}! {greeting.emoji}
                         </h1>
                         <p className="text-sm flex flex-col sm:flex-row sm:items-center gap-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
                             <span>Welcome to your real-time academic intelligence dashboard.</span>
@@ -381,8 +381,8 @@ const StudentDashboard = () => {
                         ) : assignments.filter(a => a.submissionStatus !== 'submitted').slice(0, 4).map((a, i) => (
                             <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-warning/20 bg-warning/5 transition-all hover:border-warning/40 cursor-pointer"
                                 onClick={() => navigate('/assignments')}>
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-900 border border-warning/10 text-warning shadow-sm">
-                                    <BookOpen size={16} />
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-warning/10 border border-warning/20 text-warning shadow-sm">
+                                    <BookOpen size={18} />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="font-bold text-sm truncate">{a.title}</p>

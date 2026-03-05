@@ -6,6 +6,8 @@ import com.example.studentmanagement.payload.LoginRequest;
 import com.example.studentmanagement.payload.MessageResponse;
 import com.example.studentmanagement.payload.SignupRequest;
 import com.example.studentmanagement.repository.UserRepository;
+import com.example.studentmanagement.repository.StudentRepository;
+import com.example.studentmanagement.repository.StaffRepository;
 import com.example.studentmanagement.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,12 @@ public class AuthController {
         UserRepository userRepository;
 
         @Autowired
+        StudentRepository studentRepository;
+
+        @Autowired
+        StaffRepository staffRepository;
+
+        @Autowired
         PasswordEncoder encoder;
 
         @Autowired
@@ -54,9 +62,30 @@ public class AuthController {
                                 .collect(Collectors.toList());
 
                 User user = userRepository.findByUsername(userDetails.getUsername()).get();
+
+                // Logic to fetch and sync name if not present or is a placeholder
+                if (user.getName() == null || user.getName().isEmpty() || user.getName().equals(user.getUsername())) {
+                        String name = user.getUsername(); // Default fallback
+                        if (roles.contains("ROLE_STUDENT")) {
+                                name = studentRepository.findById(user.getId())
+                                                .map(s -> s.getName())
+                                                .orElse(name);
+                        } else if (roles.contains("ROLE_STAFF")) {
+                                name = staffRepository.findById(user.getId())
+                                                .map(s -> s.getName())
+                                                .orElse(name);
+                        }
+
+                        if (!name.equals(user.getName())) {
+                                user.setName(name);
+                                userRepository.save(user);
+                        }
+                }
+
                 return ResponseEntity.ok(new JwtResponse(jwt,
                                 user.getId(),
                                 user.getUsername(),
+                                user.getName(),
                                 user.getEmail(),
                                 roles));
         }
@@ -74,6 +103,7 @@ public class AuthController {
                 user.setUsername(signUpRequest.getUsername());
                 user.setPassword(encoder.encode(signUpRequest.getPassword()));
                 user.setRole(signUpRequest.getRole());
+                user.setName(signUpRequest.getUsername()); // Initial name defaults to username
 
                 userRepository.save(user);
 

@@ -65,6 +65,7 @@ public class ProfileController {
                     newJwt,
                     user.getId(),
                     user.getUsername(),
+                    user.getName(),
                     user.getEmail(),
                     java.util.List.of("ROLE_" + user.getRole().name())));
 

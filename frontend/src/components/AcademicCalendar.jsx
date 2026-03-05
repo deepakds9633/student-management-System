@@ -211,9 +211,9 @@ const AcademicCalendar = () => {
             <AnimatePresence>
                 {isSidebarOpen && (
                     <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 380, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
-                        className="border-l relative flex flex-col bg-white dark:bg-slate-900" style={{ borderColor: 'var(--border)' }}>
+                        className="border-l relative flex flex-col" style={{ borderColor: 'var(--border)', background: 'var(--bg-elevated)' }}>
 
-                        <div className="p-5 border-b sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-10" style={{ borderColor: 'var(--border)' }}>
+                        <div className="p-5 border-b sticky top-0 backdrop-blur-md z-10" style={{ borderColor: 'var(--border)', background: 'var(--bg-base)' }}>
                             <div className="flex justify-between items-center mb-1">
                                 <h3 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>
                                     {selectedDate ? new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Schedule'}

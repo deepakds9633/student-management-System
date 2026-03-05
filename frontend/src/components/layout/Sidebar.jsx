@@ -111,6 +111,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     if (isStaff) {
         academicNav.push({ path: '/students', label: 'Students', icon: <Users size={18} /> });
+        academicNav.push({ path: '/calendar', label: 'Calendar', icon: <Calendar size={18} /> });
         academicNav.push({ path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> });
         academicNav.push({ path: '/user-management', label: 'User Management', icon: <UserCog size={18} /> });
     }
@@ -229,11 +230,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                 className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0"
                                 style={{ background: getRoleGradient(), boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
                             >
-                                {user.username?.[0]?.toUpperCase() || 'U'}
+                                {(user.name || user.username)?.[0]?.toUpperCase() || 'U'}
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.username}</p>
+                            <p className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.name || user.username}</p>
                             <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{getRoleName()}</p>
                         </div>
                         <button

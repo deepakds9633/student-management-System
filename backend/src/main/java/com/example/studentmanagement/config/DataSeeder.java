@@ -113,6 +113,7 @@ public class DataSeeder implements CommandLineRunner {
         private User createUser(String username, String password, Role role) {
                 User user = new User();
                 user.setUsername(username);
+                user.setName(username); // Set name to username by default
                 user.setPassword(passwordEncoder.encode(password));
                 user.setRole(role);
                 return userRepository.save(user);
@@ -124,6 +125,8 @@ public class DataSeeder implements CommandLineRunner {
                 staff.setName(name);
                 staff.setEmail(user.getUsername() + "@mec.edu.in");
                 staff.setDepartment(dept);
+                user.setName(name);
+                userRepository.save(user);
                 staffRepository.save(staff);
         }
 
@@ -138,6 +141,8 @@ public class DataSeeder implements CommandLineRunner {
                 student.setYear("III");
                 student.setSemester("VI");
                 student.setDepartment("Information Technology");
+                user.setName(name);
+                userRepository.save(user);
                 return studentRepository.save(student);
         }
 
