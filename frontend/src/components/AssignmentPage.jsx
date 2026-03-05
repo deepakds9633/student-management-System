@@ -241,13 +241,23 @@ const AssignmentPage = () => {
                                                 <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmitSubmission}
                                                     className="p-4 rounded-xl border border-dashed border-primary/30 space-y-4" style={{ background: 'var(--bg-elevated)' }}>
 
+
                                                     <div className="flex bg-surface p-1 rounded-lg border border-border">
-                                                        <button type="button" onClick={() => setSubmissionType('FILE')} className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'FILE' ? 'bg-primary text-white shadow-sm' : 'opacity-50'}`}>File Upload</button>
-                                                        <button type="button" onClick={() => setSubmissionType('TEXT')} className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'TEXT' ? 'bg-primary text-white shadow-sm' : 'opacity-50'}`}>Text Editor</button>
+                                                        <button type="button" onClick={() => setSubmissionType('FILE')}
+                                                            className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'FILE' ? 'text-white shadow-md' : 'opacity-40 hover:opacity-70'}`}
+                                                            style={submissionType === 'FILE' ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' } : {}}>
+                                                            File Upload
+                                                        </button>
+                                                        <button type="button" onClick={() => setSubmissionType('TEXT')}
+                                                            className={`flex-1 py-1.5 text-[10px] font-black uppercase rounded-md transition-all ${submissionType === 'TEXT' ? 'text-white shadow-md' : 'opacity-40 hover:opacity-70'}`}
+                                                            style={submissionType === 'TEXT' ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' } : {}}>
+                                                            Text Editor
+                                                        </button>
                                                     </div>
 
+
                                                     {submissionType === 'FILE' ? (
-                                                        <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-primary/10 file:text-primary file:font-bold" />
+                                                        <input type="file" required onChange={e => setFile(e.target.files[0])} className="text-[10px] w-full file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:bg-indigo-600 file:text-white file:font-bold file:cursor-pointer file:transition-all hover:file:bg-indigo-700" />
                                                     ) : (
                                                         <textarea
                                                             required
@@ -401,9 +411,9 @@ const AssignmentPage = () => {
             <AnimatePresence>
                 {previewing && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPreviewing(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPreviewing(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
                         <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-4xl bg-base rounded-3xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: '90vh' }}>
+                            className="relative w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col" style={{ maxHeight: '90vh', background: 'var(--bg-base, #ffffff)', boxShadow: '0 25px 60px rgba(0,0,0,0.5)' }}>
                             <div className="p-6 border-b flex justify-between items-center bg-surface">
                                 <div>
                                     <h2 className="text-lg font-black tracking-tight">{previewing.title}</h2>
