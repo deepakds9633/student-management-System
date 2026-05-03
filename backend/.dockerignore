@@ -1,0 +1,4 @@
+target/
+*.log
+*.csv
+.mvn/wrapper/maven-wrapper.jar
