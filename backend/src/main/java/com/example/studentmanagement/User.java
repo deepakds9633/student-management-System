@@ -29,7 +29,7 @@ public class User {
     private String email;
 
     @Lob
-    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    @Column(name = "profile_image")
     private byte[] profileImage;
 
     @Column(name = "profile_image_type")
