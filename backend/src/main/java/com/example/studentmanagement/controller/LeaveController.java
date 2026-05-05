@@ -16,7 +16,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, maxAge = 3600)
 @RestController
 @RequestMapping("/api/leaves")
 public class LeaveController {

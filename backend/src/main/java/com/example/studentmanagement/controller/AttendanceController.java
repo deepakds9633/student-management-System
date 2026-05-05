@@ -13,7 +13,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, maxAge = 3600)
 @RestController
 @RequestMapping("/api/attendance")
 public class AttendanceController {
@@ -36,13 +35,13 @@ public class AttendanceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public Attendance markAttendance(@RequestBody Attendance attendance) {
         return attendanceService.markAttendance(attendance);
     }
 
     @PostMapping("/bulk")
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public List<Attendance> markBulkAttendance(@RequestBody List<Attendance> attendanceList) {
         return attendanceService.markBulkAttendance(attendanceList);
     }

@@ -113,7 +113,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/assignments/preview/**").permitAll()
                         .requestMatchers("/api/assignments/download/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/profile/avatar/**").permitAll()
-                        .requestMatchers("/api/announcements/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated());
 

@@ -13,7 +13,6 @@ import com.example.studentmanagement.repository.UserRepository;
 import java.security.Principal;
 import java.util.List;
 
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, maxAge = 3600)
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {

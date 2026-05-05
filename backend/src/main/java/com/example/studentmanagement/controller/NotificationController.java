@@ -21,7 +21,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" }, maxAge = 3600, allowCredentials = "true")
 public class NotificationController {
 
     @Autowired
